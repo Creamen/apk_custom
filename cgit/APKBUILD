@@ -1,12 +1,12 @@
-# Contributor: 
-# Maintainer:
+# Contributor: BARON David <db@crea.mn>
+# Maintainer: BARON David <db@crea.mn>
 pkgname=cgit
 pkgver=v1.1
 pkgrel=0
 pkgdesc="cgit - git frontend in C"
 url="https://git.zx2c4.com/cgit/"
-arch="all"
-license="GPL"
+arch="x86_64"
+license="GPLv2"
 depends="highlight lua-dev gettext-dev openssl-dev git libintl"
 makedepends="$depends"
 install=""
@@ -16,6 +16,7 @@ builddir="$srcdir/$pkgname-$pkgver"
 prepare() {
 	cd "$srcdir"
 	git clone -b $pkgver https://git.zx2c4.com/cgit $pkgname-$pkgver || return 1
+	curl https://raw.githubusercontent.com/erusev/parsedown/master/Parsedown.php > ../ext/Parsedown.php
 }
 
 build() {
@@ -24,7 +25,7 @@ build() {
 	git submodule update
 	make get-git
 	sed -i 's,CGIT_LIBS += -ldl,CGIT_LIBS += -ldl -lintl,g' cgit.mk
-	make NO_REGEX=NeedsStartEnd -j16
+	make NO_REGEX=NeedsStartEnd -j8
 }
 
 check() {
