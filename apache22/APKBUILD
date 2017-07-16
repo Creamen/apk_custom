@@ -7,9 +7,11 @@ pkgdesc="Apache 2.2 / PHP 5.6"
 url="https://www.apache.org"
 arch="x86_64"
 license="BSD"
-#depends="gettext-dev git libintl libldap openldap-dev openssl-dev"
-depends="gettext-dev git libintl openldap-dev postgresql-dev fts-dev cyrus-sasl-dev zlib-dev libxml2-dev db-dev libpng-dev freetype-dev gettext-dev libmcrypt-dev libxslt-dev pcre-dev sqlite-dev bzip2-dev curl-dev gdbm-dev libffi-dev glib-dev enchant-dev libjpeg-turbo-dev libxdmcp-dev libxcb-dev gmp-dev icu-dev unixodbc-dev freetds-dev postgresql-dev aspell-dev ncurses-dev libedit-dev recode-dev tidyhtml-dev libzip-dev"
-makedepends="$depends"
+depends="gettext libintl libldap libpq zlib libxml2 libpng libmcrypt libxslt pcre sqlite libbz2 curl libffi libjpeg-turbo libxdmcp libxcb ncurses-libs libedit libzip"
+depends_dev="gettext-dev git libintl openldap-dev postgresql-dev fts-dev cyrus-sasl-dev zlib-dev libxml2-dev db-dev libpng-dev freetype-dev gettext-dev libmcrypt-dev \
+	libxslt-dev pcre-dev sqlite-dev bzip2-dev curl-dev gdbm-dev libffi-dev glib-dev enchant-dev libjpeg-turbo-dev libxdmcp-dev libxcb-dev gmp-dev icu-dev unixodbc-dev \
+	freetds-dev aspell-dev ncurses-dev libedit-dev recode-dev tidyhtml-dev libzip-dev"
+makedepends="$depends_dev"
 install=""
 subpackages=""
 builddir="$srcdir/$pkgname-$pkgver"
@@ -21,133 +23,134 @@ prepare() {
 	curl -L -o php-5.6.31.tar.bz2 http://php.net/get/php-5.6.31.tar.bz2/from/this/mirror
 	curl -LO https://www.mirrorservice.org/sites/ftp.cac.washington.edu/imap/imap-2007f.tar.gz
 	curl -LO https://www.openssl.org/source/openssl-1.0.2l.tar.gz
-	#curl -LO http://www-eu.apache.org/dist/apr/apr-util-1.6.0.tar.bz2
 	tar -xjf httpd-2.2.34.tar.bz2 
 	tar -xjf php-5.6.31.tar.bz2 
 	tar -xzf imap-2007f.tar.gz
 	tar -xzf openssl-1.0.2l.tar.gz
-	#tar -xjf apr-util-1.6.0.tar.bz2
+
+	# https://hub.docker.com/r/wodby/nginx-php-5.3-alpine/~/dockerfile/
+	mkdir -p /usr/include/freetype2/freetype
+	cp /usr/include/tidybuffio.h /usr/include/buffio.h
 	
 }
 
 build() {
 	cd "$builddir"
 	cd openssl-1.0.2l
-	CFLAGS="-fPIC" ./config shared --prefix=/usr --openssldir=/etc/openssl
+	CFLAGS="-fPIC" ./config shared --prefix=$prefix/usr --openssldir=$prefix/etc/openssl
 	make -j16
-	sudo make install
+	make install
 	cd ../imap-2007f
 	make slx EXTRACFLAGS="-I/usr/include/openssl -L/usr/lib -fPIC" && mkdir lib && cp c-client/c-client.a lib/libc-client.a
+        cd ../httpd-2.2.34
+        ./configure --prefix=/usr/ --with-included-apr --enable-so --enable-mods-shared=all --enable-authn-db \
+                --sysconfdir=$prefix/etc/apache2 --localstatedir=$preifx/var \
+                --enable-authn-alias --enable-authnz-ldap --enable-dbd --enable-charset-lite --enable-deflate --enable-ldap \
+                --enable-ssl --enable-dav --enable-dav-fs --enable-dav-lock --enable-vhost-alias --enable-rewrite --enable-so \
+                --enable-auth-ldap --enable-proxy --with-ldap --with-mpm=prefork --enable-log-forensic --with-ssl=$prefix/usr/
+        make -j16                                                                                                              
+        make install                                                                                                      
 	cd ../php-5.6.31
-	./configure \
-	'--build=x86_64-alpine-linux-musl' \
-	'--host=x86_64-alpine-linux-musl' \
-	'--prefix=/usr/' \
-	'--program-suffix=5' \
-	'--libdir=/usr/lib/php5' \
-	'--datadir=/usr/share/php5' \
-	'--sysconfdir=/etc/php5' \
-	'--localstatedir=/var' \
-	'--with-layout=GNU' \
-	'--with-pic' \
-	'--with-pear=/usr/share/php5' \
-	'--with-config-file-path=/etc/php5' \
-	'--with-config-file-scan-dir=/etc/php5/conf.d' \
-	'--disable-short-tags' \
-	'--enable-bcmath=shared' \
-	'--with-bz2=shared' \
-	'--enable-calendar=shared' \
-	'--enable-ctype=shared' \
-	'--with-curl=shared' \
-	'--enable-dba=shared' \
-	'--with-db4' \
-	'--with-dbmaker=shared' \
-	'--with-gdbm' \
-	'--enable-dom=shared' \
-	'--with-enchant=shared' \
-	'--enable-exif=shared' \
-	'--enable-fileinfo=shared' \
-	'--enable-ftp=shared' \
-	'--with-gd=shared' \
-	'--with-freetype-dir=/usr' \
-	'--disable-gd-jis-conv' \
-	'--enable-gd-native-ttf' \
-	'--with-jpeg-dir=/usr' \
-	'--with-png-dir=/usr' \
-	'--with-webp-dir=/usr' \
-	'--with-xpm-dir=/usr' \
-	'--with-gettext=shared' \
-	'--with-gmp=shared' \
-	'--with-iconv=shared' \
-	'--with-imap=../imap-2007f' \
-	'--with-imap-ssl' \
-	'--with-icu-dir=/usr' \
-	'--enable-intl=shared' \
-	'--enable-json=shared' \
-	'--with-ldap=shared' \
-	'--with-ldap-sasl' \
-	'--with-libedit' \
-	'--enable-libxml' \
-	'--with-libxml-dir=/usr' \
-	'--enable-mbstring=shared' \
-	'--with-mcrypt=shared' \
+	/configure \
+	--build=x86_64-alpine-linux-musl \
+	--host=x86_64-alpine-linux-musl \
+	--prefix=$prefix/usr/ \
+	--program-suffix=5 \
+	--libdir=/usr/lib/php5 \
+	--datadir=/usr/share/php5 \
+	--sysconfdir=/etc/php5 \
+	--localstatedir=/var \
+	--with-layout=GNU \
+	--with-pic \
+	--with-pear=/usr/share/php5 \
+	--with-config-file-path=/etc/php5 \
+	--with-config-file-scan-dir=/etc/php5/conf.d \
+	--disable-short-tags \
+	--enable-bcmath=shared \
+	--with-bz2=shared \
+	--enable-calendar=shared \
+	--enable-ctype=shared \
+	--with-curl=shared' \
+	--enable-dba=shared \
+	--with-db4 \
+	--with-dbmaker=shared \
+	--with-gdbm \
+	--enable-dom=shared \
+	--with-enchant=shared \
+	--enable-exif=shared \
+	--enable-fileinfo=shared \
+	--enable-ftp=shared \
+	--with-gd=shared \
+	--with-freetype-dir=/usr \
+	--disable-gd-jis-conv \
+	--enable-gd-native-ttf \
+	--with-jpeg-dir=/usr \
+	--with-png-dir=/usr \
+	--with-webp-dir=/usr \
+	--with-xpm-dir=/usr \
+	--with-gettext=shared \
+	--with-gmp=shared \
+	--with-iconv=shared \
+	--with-imap=../imap-2007f \
+	--with-imap-ssl \
+	--with-icu-dir=/usr \
+	--enable-intl=shared \
+	--enable-json=shared \
+	--with-ldap=shared \
+	--with-ldap-sasl \
+	--with-libedit \
+	--enable-libxml \
+	--with-libxml-dir=/usr \
+	--enable-mbstring=shared \
+	--with-mcrypt=shared \
 	'--with-mysqli=shared,mysqlnd' \
-	'--with-mysql-sock=/run/mysqld/mysqld.sock' \
-	'--enable-mysqlnd=shared' \
-	'--enable-opcache=shared' \
-	'--with-openssl=shared' \
-	'--with-system-ciphers' \
-	'--enable-pcntl=shared' \
-	'--enable-pdo=shared' \
-	'--with-pdo-dblib=shared' \
+	--with-mysql-sock=/run/mysqld/mysqld.sock \
+	--enable-mysqlnd=shared \
+	--enable-opcache=shared \
+	--with-openssl=shared \
+	--with-system-ciphers \
+	--enable-pcntl=shared \
+	--enable-pdo=shared \
+	--with-pdo-dblib=shared \
 	'--with-pdo-mysql=shared,mysqlnd' \
 	'--with-pdo-odbc=shared,unixODBC,/usr' \
-	'--with-pdo-pgsql=shared' \
+	--with-pdo-pgsql=shared \
 	'--with-pdo-sqlite=shared,/usr' \
-	'--with-pgsql=shared' \
-	'--enable-phar=shared' \
-	'--enable-posix=shared' \
-	'--with-pspell=shared' \
-	'--without-readline' \
-	'--enable-session=shared' \
-	'--enable-shmop=shared' \
-	'--enable-simplexml=shared' \
-	'--enable-soap=shared' \
-	'--enable-sockets=shared' \
+	--with-pgsql=shared \
+	--enable-phar=shared \
+	--enable-posix=shared \
+	--with-pspell=shared \
+	--without-readline \
+	--enable-session=shared \
+	--enable-shmop=shared \
+	--enable-simplexml=shared \
+	--enable-soap=shared \
+	--enable-sockets=shared \
 	'--with-sqlite3=shared,/usr' \
-	'--enable-sysvmsg=shared' \
-	'--enable-sysvsem=shared' \
-	'--enable-sysvshm=shared' \
-	'--with-tidy=shared' \
-	'--enable-tokenizer=shared' \
+	--enable-sysvmsg=shared \
+	--enable-sysvsem=shared \
+	--enable-sysvshm=shared \
+	--with-tidy=shared \
+	--enable-tokenizer=shared \
 	'--with-unixODBC=shared,/usr' \
-	'--enable-wddx=shared' \
-	'--enable-xml=shared' \
-	'--enable-xmlreader=shared' \
-	'--with-xmlrpc=shared' \
-	'--enable-xmlwriter=shared' \
-	'--with-xsl=shared' \
-	'--enable-zip=shared' \
-	'--with-libzip=/usr' \
-	'--with-zlib=shared' \
-	'--with-zlib-dir=/usr' \
-	'--disable-phpdbg' \
-	'--disable-cgi' \
-	'--disable-cli' \
-	'--with-apxs2' \
-	'build_alias=x86_64-alpine-linux-musl' \
-	'host_alias=x86_64-alpine-linux-musl' 
+	--enable-wddx=shared \
+	--enable-xml=shared \
+	--enable-xmlreader=shared \
+	--with-xmlrpc=shared \
+	--enable-xmlwriter=shared \
+	--with-xsl=shared \
+	--enable-zip=shared \
+	--with-libzip=/usr \
+	--with-zlib=shared \
+	--with-zlib-dir=/usr \
+	--disable-phpdbg \
+	--disable-cgi \
+	--disable-cli \
+	--with-apxs2 \
+	build_alias=x86_64-alpine-linux-musl \
+	host_alias=x86_64-alpine-linux-musl 
 	make -j16
-	sudo make install
-	cd ../httpd-2.2.34
-	./configure --prefix=/usr/ --with-included-apr --enable-so --enable-mods-shared=all --enable-authn-db \
-	        --sysconfdir=/etc/apache2 --localstatedir=/var \
-		--enable-authn-alias --enable-authnz-ldap --enable-dbd --enable-charset-lite --enable-deflate --enable-ldap \
-		--enable-ssl --enable-dav --enable-dav-fs --enable-dav-lock --enable-vhost-alias --enable-rewrite --enable-so \
-		--enable-auth-ldap --enable-proxy --with-ldap --with-mpm=prefork --enable-log-forensic --with-ssl=/usr/
-	make -j16
-	sudo make install
-
+	make install
 }
 
 check() {
@@ -164,6 +167,8 @@ doc() {
 
 package() {
 	cd "$builddir"
+	echo "$pkgdir"
+	sh
 	install -d "$pkgdir"/run/httpd/etc/apache2/2.2 "$pkgdir"/run/httpd/etc/php5 || return 1
 	strip cgit
 	install cgit "$pkgdir"/run/httpd/sites/cgit || return 1
