@@ -7,30 +7,29 @@ pkgdesc="Apache 2.2 / PHP 5.6"
 url="https://www.apache.org"
 arch="x86_64"
 license="BSD"
-depends="gettext libintl libldap libpq zlib libxml2 libpng libmcrypt libxslt pcre sqlite libbz2 curl libffi libjpeg-turbo libxdmcp libxcb ncurses-libs libedit libzip"
-depends_dev="gettext-dev git libintl openldap-dev postgresql-dev fts-dev cyrus-sasl-dev zlib-dev libxml2-dev db-dev libpng-dev freetype-dev gettext-dev libmcrypt-dev \
+depends="imap libxpm libvpx gettext libintl libldap libpq zlib libxml2 libpng libmcrypt libxslt pcre sqlite libbz2 curl libffi libjpeg-turbo libxdmcp libxcb ncurses-libs libedit libzip"
+depends_dev="imap-dev libxpm-dev libvpx-dev gettext-dev git libintl openldap-dev postgresql-dev fts-dev cyrus-sasl-dev zlib-dev libxml2-dev db-dev libpng-dev freetype-dev gettext-dev libmcrypt-dev \
 	libxslt-dev pcre-dev sqlite-dev bzip2-dev curl-dev gdbm-dev libffi-dev glib-dev enchant-dev libjpeg-turbo-dev libxdmcp-dev libxcb-dev gmp-dev icu-dev unixodbc-dev \
 	freetds-dev aspell-dev ncurses-dev libedit-dev recode-dev tidyhtml-dev libzip-dev"
 makedepends="$depends_dev"
 install=""
 subpackages=""
 builddir="$srcdir/$pkgname-$pkgver"
+prefix=//tmp//
 
 prepare() {
 	mkdir -p "$builddir"
 	cd "$builddir"
 	curl -LO http://www-eu.apache.org/dist/httpd/httpd-2.2.34.tar.bz2
 	curl -L -o php-5.6.31.tar.bz2 http://php.net/get/php-5.6.31.tar.bz2/from/this/mirror
-	curl -LO https://www.mirrorservice.org/sites/ftp.cac.washington.edu/imap/imap-2007f.tar.gz
 	curl -LO https://www.openssl.org/source/openssl-1.0.2l.tar.gz
 	tar -xjf httpd-2.2.34.tar.bz2 
 	tar -xjf php-5.6.31.tar.bz2 
-	tar -xzf imap-2007f.tar.gz
 	tar -xzf openssl-1.0.2l.tar.gz
 
 	# https://hub.docker.com/r/wodby/nginx-php-5.3-alpine/~/dockerfile/
-	mkdir -p /usr/include/freetype2/freetype
-	cp /usr/include/tidybuffio.h /usr/include/buffio.h
+	sudo mkdir -p /usr/include/freetype2/freetype 
+	sudo cp /usr/include/tidybuffio.h /usr/include/buffio.h
 	
 }
 
@@ -40,29 +39,27 @@ build() {
 	CFLAGS="-fPIC" ./config shared --prefix=$prefix/usr --openssldir=$prefix/etc/openssl
 	make -j16
 	make install
-	cd ../imap-2007f
-	make slx EXTRACFLAGS="-I/usr/include/openssl -L/usr/lib -fPIC" && mkdir lib && cp c-client/c-client.a lib/libc-client.a
         cd ../httpd-2.2.34
-        ./configure --prefix=/usr/ --with-included-apr --enable-so --enable-mods-shared=all --enable-authn-db \
-                --sysconfdir=$prefix/etc/apache2 --localstatedir=$preifx/var \
+        ./configure --prefix=$prefix/usr/ --with-included-apr --enable-so --enable-mods-shared=all --enable-authn-db \
+                --sysconfdir=$prefix/etc/apache2 --localstatedir=$prefix/var \
                 --enable-authn-alias --enable-authnz-ldap --enable-dbd --enable-charset-lite --enable-deflate --enable-ldap \
                 --enable-ssl --enable-dav --enable-dav-fs --enable-dav-lock --enable-vhost-alias --enable-rewrite --enable-so \
                 --enable-auth-ldap --enable-proxy --with-ldap --with-mpm=prefork --enable-log-forensic --with-ssl=$prefix/usr/
         make -j16                                                                                                              
         make install                                                                                                      
 	cd ../php-5.6.31
-	/configure \
+	PATH=$prefix/usr/bin:$prefix/usr/sbin:$PATH ./configure \
 	--build=x86_64-alpine-linux-musl \
 	--host=x86_64-alpine-linux-musl \
 	--prefix=$prefix/usr/ \
 	--program-suffix=5 \
-	--libdir=/usr/lib/php5 \
-	--datadir=/usr/share/php5 \
-	--sysconfdir=/etc/php5 \
-	--localstatedir=/var \
+	--libdir=$prefix/usr/lib/php5 \
+	--datadir=$prefix/usr/share/php5 \
+	--sysconfdir=$prefix/etc/php5 \
+	--localstatedir=$prefix/var \
 	--with-layout=GNU \
 	--with-pic \
-	--with-pear=/usr/share/php5 \
+	--with-pear=$prefix/usr/share/php5 \
 	--with-config-file-path=/etc/php5 \
 	--with-config-file-scan-dir=/etc/php5/conf.d \
 	--disable-short-tags \
@@ -70,7 +67,7 @@ build() {
 	--with-bz2=shared \
 	--enable-calendar=shared \
 	--enable-ctype=shared \
-	--with-curl=shared' \
+	--with-curl=shared \
 	--enable-dba=shared \
 	--with-db4 \
 	--with-dbmaker=shared \
@@ -85,13 +82,13 @@ build() {
 	--disable-gd-jis-conv \
 	--enable-gd-native-ttf \
 	--with-jpeg-dir=/usr \
+	--with-vpx-dir=/usr \
 	--with-png-dir=/usr \
-	--with-webp-dir=/usr \
 	--with-xpm-dir=/usr \
 	--with-gettext=shared \
 	--with-gmp=shared \
 	--with-iconv=shared \
-	--with-imap=../imap-2007f \
+	--with-imap=/usr \
 	--with-imap-ssl \
 	--with-icu-dir=/usr \
 	--enable-intl=shared \
@@ -149,8 +146,8 @@ build() {
 	--with-apxs2 \
 	build_alias=x86_64-alpine-linux-musl \
 	host_alias=x86_64-alpine-linux-musl 
-	make -j16
-	make install
+	PATH=$prefix/usr/bin:$prefix/usr/sbin:$PATH make -j16
+	PATH=$prefix/usr/bin:$prefix/usr/sbin:$PATH make install
 }
 
 check() {
@@ -161,22 +158,21 @@ dev() {
 	cd "$builddir"
 }
 
+postcheck() {
+	cd "$builddir"
+}
+
 doc() {
 	cd "$builddir"
 }
 
 package() {
 	cd "$builddir"
-	echo "$pkgdir"
-	sh
-	install -d "$pkgdir"/run/httpd/etc/apache2/2.2 "$pkgdir"/run/httpd/etc/php5 || return 1
-	strip cgit
-	install cgit "$pkgdir"/run/httpd/sites/cgit || return 1
-	install cgit-doc.css cgit.css cgit.png "$pkgdir"/run/httpd/sites/cgit/cgit-css || return 1
-	install $srcdir/../ext/Parsedown.php \
-		$srcdir/../ext/owner.sh \
-		$srcdir/../ext/parseMarkdown_wrapper.php \
-		$srcdir/../ext/syntax-highlighting.sh "$pkgdir"/run/httpd/sites/cgit || return 1
-	install $srcdir/../ext/users/* "$pkgdir"/run/httpd/sites/cgit/users || return 1
+	install -d "$pkgdir"/run/httpd/etc/apache2/2.2 "$pkgdir"/run/httpd/etc/php5 "$pkgdir"/usr "$pkgdir"/etc || return 1
+	cp -rv /tmp/usr /tmp/etc "$pkgdir"/
+	chown -R packager:packager "$pkgdir"/
+	find "$pkgdir"/ -type d | xargs chmod +w
+	find "$pkgdir"/ -type f | xargs chmod +w
+	find "$pkgdir"/usr/share/man/ -type f | xargs gzip
 }
 
