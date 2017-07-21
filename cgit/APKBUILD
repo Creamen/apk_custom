@@ -7,7 +7,7 @@ pkgdesc="cgit - git frontend in C"
 url="https://git.zx2c4.com/cgit/"
 arch="x86_64"
 license="GPLv2"
-depends="highlight lua-dev gettext-dev libressl-dev zlib-dev git libintl"
+depends="highlight lua-dev gettext-dev libressl-dev zlib-dev git libintl perl"
 makedepends="$depends"
 install=""
 subpackages=""
@@ -26,7 +26,7 @@ build() {
 	git submodule update
 	make get-git
 	sed -i 's,CGIT_LIBS += -ldl,CGIT_LIBS += -ldl -lintl,g' cgit.mk
-	make NO_REGEX=NeedsStartEnd -j8
+	make NO_REGEX=NeedsStartEnd -j16
 }
 
 check() {
