@@ -7,8 +7,8 @@ pkgdesc="Apache 2.2 / PHP 5.6"
 url="https://www.apache.org"
 arch="x86_64"
 license="BSD"
-depends="imap libxpm libvpx gettext libintl libldap libpq zlib libxml2 libpng libmcrypt libxslt pcre sqlite libbz2 curl libffi libjpeg-turbo libxdmcp libxcb ncurses-libs libedit libzip"
-depends_dev="imap-dev libxpm-dev libvpx-dev gettext-dev git libintl openldap-dev postgresql-dev fts-dev cyrus-sasl-dev zlib-dev libxml2-dev db-dev libpng-dev freetype-dev gettext-dev libmcrypt-dev \
+depends="imap c-client libxpm libvpx gettext libintl libldap libpq zlib libxml2 libpng libmcrypt libxslt pcre sqlite libbz2 curl libffi libjpeg-turbo libxdmcp libxcb ncurses-libs libedit libzip"
+depends_dev="imap-dev libxpm-dev libvpx-dev git libintl openldap-dev postgresql-dev fts-dev cyrus-sasl-dev zlib-dev libxml2-dev db-dev libpng-dev freetype-dev gettext-dev libmcrypt-dev \
 	libxslt-dev pcre-dev sqlite-dev bzip2-dev curl-dev gdbm-dev libffi-dev glib-dev enchant-dev libjpeg-turbo-dev libxdmcp-dev libxcb-dev gmp-dev icu-dev unixodbc-dev \
 	freetds-dev aspell-dev ncurses-dev libedit-dev recode-dev tidyhtml-dev libzip-dev"
 makedepends="$depends_dev"
@@ -18,16 +18,21 @@ builddir="$srcdir/$pkgname-$pkgver"
 
 prepare() {
 	mkdir -p "$builddir"
+	sudo rm -f /usr/lib/{libexpat.a,libexpat.so,libexpat.so.0,libexpat.so.0.5.0}
 	cd "$builddir"
 	curl -L http://www-eu.apache.org/dist/httpd/httpd-2.2.34.tar.bz2 | tar -xjf -
 	curl -L http://php.net/get/php-5.6.31.tar.bz2/from/this/mirror | tar -xjf -
 	curl -L https://www.openssl.org/source/openssl-1.0.2l.tar.gz | tar -xzf -
+	curl -L http://www-us.apache.org/dist//apr/apr-1.6.2.tar.bz2 | tar -xjf - 
+	curl -L http://www-us.apache.org/dist//apr/apr-util-1.6.0.tar.bz2 | tar -xjf -
+	curl -L http://www-us.apache.org/dist//apr/apr-iconv-1.2.1.tar.bz2 | tar -xjf -
 
 	# https://hub.docker.com/r/wodby/nginx-php-5.3-alpine/~/dockerfile/
 	sudo mkdir -p /usr/include/freetype2/freetype 
 	sudo cp /usr/include/tidybuffio.h /usr/include/buffio.h
 	cd -
 	cat config.layout >> "$builddir"/httpd-2.2.34/config.layout
+	return 1
 }
 
 build() {
@@ -46,8 +51,8 @@ build() {
                 --enable-ssl --enable-dav --enable-dav-fs --enable-dav-lock --enable-vhost-alias --enable-rewrite --enable-so \
                 --enable-auth-ldap --enable-proxy --with-ldap --with-mpm=prefork --enable-log-forensic --with-ssl="$pkgdir"/usr/
         make -j16                                                                                                              
-        make -j8 DESTDIR="$pkgdir" install                                                                                                      
-        sudo make -j8 install                                                                                                      
+        make -j16 DESTDIR="$pkgdir" install                                                                                                      
+        sudo make -j16 install                                                                                                      
 	cd ../php-5.6.31
 	PATH="$pkgdir"/usr/bin:"$pkgdir"/usr/sbin:$PATH ./configure \
 	--build=x86_64-alpine-linux-musl \
@@ -56,12 +61,12 @@ build() {
 	--program-suffix=5 \
 	--libdir=/usr/lib/php5 \
 	--datadir=/usr/share/php5 \
-	--sysconfdir=/etc/php5 \
+	--sysconfdir=/usr/etc/php5 \
 	--localstatedir=/var/log/httpd \
 	--with-pic \
 	--with-pear=/usr/share/php5 \
-	--with-config-file-path=/etc/php5 \
-	--with-config-file-scan-dir=/etc/php5/conf.d \
+	--with-config-file-path=/run/httpd/etc/php5 \
+	--with-config-file-scan-dir=/run/httpd/etc/php5/conf.d \
 	--disable-short-tags \
 	--enable-bcmath=shared \
 	--with-bz2=shared \
@@ -166,15 +171,29 @@ doc() {
 	cd "$builddir"
 }
 
+trace_apk_deps() {
+	cd "$builddir"
+}
+
 package() {
 	cd "$builddir"
+	sudo adduser -D -H apache -u 1001 -g 1001
+	sudo rm -f /usr/lib/{libexpat.a,libexpat.so,libexpat.so.0,libexpat.so.0.5.0}
+	cd openssl-1.0.2l
+	make -j1  INSTALL_PREFIX="$pkgdir" install
+	cd ../httpd-2.2.34
+	make -j1 DESTDIR="$pkgdir" install
+	cd ../php-5.6.31
+	PATH="$pkgdir"/usr/bin:"$pkgdir"/usr/sbin:$PATH make -j1 INSTALL_ROOT="$pkgdir"/ install
+	cd ..
 	install -d "$pkgdir"/run/httpd/etc/apache2/2.2 "$pkgdir"/run/httpd/etc/php5 || return 1
-	# XXX : Missing symlink to usr lib modules ?
-	cp -r "$pkgdir"/etc/apache/ "$pkgdir"/run/httpd/etc/apache2/2.2
-	cp -r "$pkgdir"/etc/php5 "$pkgdir"/run/httpd/etc/php5
-	chown -R packager:packager "$pkgdir"/
+	chown -R apache:apache "$pkgdir"/etc/apache2 "$pkgdir"/run/httpd/etc/apache2/2.2 "$pkgdir"/run/httpd/etc/php5 
 	find "$pkgdir"/ -type d -exec chmod +w {} \;
 	find "$pkgdir"/ -type f -exec chmod +w {} \;
-	find "$pkgdir"/usr/share/man/ -type f | xargs gzip
+	find "$pkgdir"/usr/man/ -type f | xargs gzip
+	cp /usr/lib/libexpat* "$pkgdir"/usr/lib
+	rm -f "$pkgdir"/usr/bin/c_rehash
+	sudo deluser apache
+	sh
 }
 
