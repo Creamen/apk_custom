@@ -7,7 +7,7 @@ pkgdesc="cgit - git frontend in C"
 url="https://git.zx2c4.com/cgit/"
 arch="x86_64"
 license="GPLv2"
-depends="highlight lua-dev gettext-dev openssl-dev git libintl"
+depends="highlight lua-dev gettext-dev libressl-dev zlib-dev git libintl"
 makedepends="$depends"
 install=""
 subpackages=""
@@ -16,7 +16,8 @@ builddir="$srcdir/$pkgname-$pkgver"
 prepare() {
 	cd "$srcdir"
 	git clone -b $pkgver https://git.zx2c4.com/cgit $pkgname-$pkgver || return 1
-	curl https://raw.githubusercontent.com/erusev/parsedown/master/Parsedown.php > ../ext/Parsedown.php
+	curl -L https://raw.githubusercontent.com/erusev/parsedown/master/Parsedown.php > ../ext/Parsedown.php
+	curl -L https://raw.githubusercontent.com/bagder/roffit/master/roffit > ../ext/roffit && chmod +x ../ext/roffit
 }
 
 build() {
@@ -47,7 +48,9 @@ package() {
 	install cgit "$pkgdir"/run/httpd/sites/cgit || return 1
 	install cgit-doc.css cgit.css cgit.png "$pkgdir"/run/httpd/sites/cgit/cgit-css || return 1
 	install $srcdir/../ext/Parsedown.php \
+		$srcdir/../ext/favicon.ico \
 		$srcdir/../ext/owner.sh \
+		$srcdir/../ext/roffit \
 		$srcdir/../ext/parseMarkdown_wrapper.php \
 		$srcdir/../ext/syntax-highlighting.sh "$pkgdir"/run/httpd/sites/cgit || return 1
 	install $srcdir/../ext/users/* "$pkgdir"/run/httpd/sites/cgit/users || return 1

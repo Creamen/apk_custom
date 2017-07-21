@@ -107,8 +107,15 @@ EXTENSION="${BASENAME##*.}"
 # map Makefile and Makefile.* to .mk
 [ "${BASENAME%%.*}" = "Makefile" ] && EXTENSION=mk
 
-if [ ${EXTENSION} = 'md' ]; then
-	exec php -f parseMarkdown_wrapper.php 2>/dev/null
-else
-	exec highlight --force --inline-css -f -I -O xhtml -S "$EXTENSION" 2>/dev/null
-fi
+case "${EXTENSION}" in
+	'md')
+		exec php -f parseMarkdown_wrapper.php 2>/dev/null
+		;;
+	'1'|'2'|'3'|'4'|'5'|'6'|'7'|'8'|'9')
+		exec perl -- roffit 2>/dev/null
+		;;
+	*)
+		exec highlight --force --inline-css -f -I -O xhtml -S "$EXTENSION" 2>/dev/null
+		;;
+esac
+
