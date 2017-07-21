@@ -15,51 +15,51 @@ makedepends="$depends_dev"
 install=""
 subpackages=""
 builddir="$srcdir/$pkgname-$pkgver"
-prefix=//tmp//
 
 prepare() {
 	mkdir -p "$builddir"
 	cd "$builddir"
-	curl -LO http://www-eu.apache.org/dist/httpd/httpd-2.2.34.tar.bz2
-	curl -L -o php-5.6.31.tar.bz2 http://php.net/get/php-5.6.31.tar.bz2/from/this/mirror
-	curl -LO https://www.openssl.org/source/openssl-1.0.2l.tar.gz
-	tar -xjf httpd-2.2.34.tar.bz2 
-	tar -xjf php-5.6.31.tar.bz2 
-	tar -xzf openssl-1.0.2l.tar.gz
+	curl -L http://www-eu.apache.org/dist/httpd/httpd-2.2.34.tar.bz2 | tar -xjf -
+	curl -L http://php.net/get/php-5.6.31.tar.bz2/from/this/mirror | tar -xjf -
+	curl -L https://www.openssl.org/source/openssl-1.0.2l.tar.gz | tar -xzf -
 
 	# https://hub.docker.com/r/wodby/nginx-php-5.3-alpine/~/dockerfile/
 	sudo mkdir -p /usr/include/freetype2/freetype 
 	sudo cp /usr/include/tidybuffio.h /usr/include/buffio.h
-	
+	cd -
+	cat config.layout >> "$builddir"/httpd-2.2.34/config.layout
 }
 
 build() {
 	cd "$builddir"
 	cd openssl-1.0.2l
-	CFLAGS="-fPIC" ./config shared --prefix=$prefix/usr --openssldir=$prefix/etc/openssl
+	CFLAGS="-fPIC" ./config shared --prefix=/usr --openssldir=/etc/openssl
 	make -j16
-	make install
+	# https://github.com/jumanjiman/alpine-pkg-openssl/blob/master/APKBUILD
+	make -j1  INSTALL_PREFIX="$pkgdir" install
         cd ../httpd-2.2.34
-        ./configure --prefix=$prefix/usr/ --with-included-apr --enable-so --enable-mods-shared=all --enable-authn-db \
-                --sysconfdir=$prefix/etc/apache2 --localstatedir=$prefix/var \
+	# Pour apxs faire le un lien symoblique ???
+        ./configure --prefix=/usr/ --with-included-apr --enable-so --enable-mods-shared=all --enable-authn-db \
+                --sysconfdir=/etc/apache2 --localstatedir=/var/log/httpd \
+		--enable-layout=Apache \
                 --enable-authn-alias --enable-authnz-ldap --enable-dbd --enable-charset-lite --enable-deflate --enable-ldap \
                 --enable-ssl --enable-dav --enable-dav-fs --enable-dav-lock --enable-vhost-alias --enable-rewrite --enable-so \
-                --enable-auth-ldap --enable-proxy --with-ldap --with-mpm=prefork --enable-log-forensic --with-ssl=$prefix/usr/
+                --enable-auth-ldap --enable-proxy --with-ldap --with-mpm=prefork --enable-log-forensic --with-ssl="$pkgdir"/usr/
         make -j16                                                                                                              
-        make install                                                                                                      
+        make -j8 DESTDIR="$pkgdir" install                                                                                                      
+        sudo make -j8 install                                                                                                      
 	cd ../php-5.6.31
-	PATH=$prefix/usr/bin:$prefix/usr/sbin:$PATH ./configure \
+	PATH="$pkgdir"/usr/bin:"$pkgdir"/usr/sbin:$PATH ./configure \
 	--build=x86_64-alpine-linux-musl \
 	--host=x86_64-alpine-linux-musl \
-	--prefix=$prefix/usr/ \
+	--prefix=/usr/ \
 	--program-suffix=5 \
-	--libdir=$prefix/usr/lib/php5 \
-	--datadir=$prefix/usr/share/php5 \
-	--sysconfdir=$prefix/etc/php5 \
-	--localstatedir=$prefix/var \
-	--with-layout=GNU \
+	--libdir=/usr/lib/php5 \
+	--datadir=/usr/share/php5 \
+	--sysconfdir=/etc/php5 \
+	--localstatedir=/var/log/httpd \
 	--with-pic \
-	--with-pear=$prefix/usr/share/php5 \
+	--with-pear=/usr/share/php5 \
 	--with-config-file-path=/etc/php5 \
 	--with-config-file-scan-dir=/etc/php5/conf.d \
 	--disable-short-tags \
@@ -146,8 +146,8 @@ build() {
 	--with-apxs2 \
 	build_alias=x86_64-alpine-linux-musl \
 	host_alias=x86_64-alpine-linux-musl 
-	PATH=$prefix/usr/bin:$prefix/usr/sbin:$PATH make -j16
-	PATH=$prefix/usr/bin:$prefix/usr/sbin:$PATH make install
+	PATH="$pkgdir"/usr/bin:"$pkgdir"/usr/sbin:$PATH make -j16
+	PATH="$pkgdir"/usr/bin:"$pkgdir"/usr/sbin:$PATH make -j1 INSTALL_ROOT="$pkgdir"/ install
 }
 
 check() {
@@ -168,11 +168,13 @@ doc() {
 
 package() {
 	cd "$builddir"
-	install -d "$pkgdir"/run/httpd/etc/apache2/2.2 "$pkgdir"/run/httpd/etc/php5 "$pkgdir"/usr "$pkgdir"/etc || return 1
-	cp -rv /tmp/usr /tmp/etc "$pkgdir"/
+	install -d "$pkgdir"/run/httpd/etc/apache2/2.2 "$pkgdir"/run/httpd/etc/php5 || return 1
+	# XXX : Missing symlink to usr lib modules ?
+	cp -r "$pkgdir"/etc/apache/ "$pkgdir"/run/httpd/etc/apache2/2.2
+	cp -r "$pkgdir"/etc/php5 "$pkgdir"/run/httpd/etc/php5
 	chown -R packager:packager "$pkgdir"/
-	find "$pkgdir"/ -type d | xargs chmod +w
-	find "$pkgdir"/ -type f | xargs chmod +w
+	find "$pkgdir"/ -type d -exec chmod +w {} \;
+	find "$pkgdir"/ -type f -exec chmod +w {} \;
 	find "$pkgdir"/usr/share/man/ -type f | xargs gzip
 }
 
