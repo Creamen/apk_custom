@@ -1,5 +1,10 @@
 # Contributor: BARON David <db@crea.mn>
 # Maintainer: BARON David <db@crea.mn>
+
+_ver_major=2
+_ver_minor=0
+_pkgfullname="courier-unicode-$_ver_major.$_ver_minor"
+
 pkgname=courier-unicode
 pkgver=v2.0
 pkgrel=0
@@ -18,12 +23,12 @@ prepare() {
 	mkdir -p "$builddir"
 	cd "$builddir"
 	
-	curl -L https://sourceforge.net/projects/courier/files/courier-unicode/2.0/courier-unicode-2.0.tar.bz2/download | tar -xjf -
+	curl -L https://sourceforge.net/projects/courier/files/courier-unicode/$_ver_major.$_ver_minor/$_pkgfullname.tar.bz2/download | tar -xjf -
 }
 
 build() {
 	cd "$builddir"
-	cd courier-unicode-2.0
+	cd $_pkgfullname
 	./configure --prefix=/usr
 	make -j16
 }
@@ -50,7 +55,7 @@ trace_apk_deps() {
 
 package() {
 	cd "$builddir"
-	cd courier-unicode-2.0
+	cd $_pkgfullname
 	make -j1 DESTDIR="$pkgdir" install
 }
 
