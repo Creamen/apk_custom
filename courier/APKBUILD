@@ -1,0 +1,52 @@
+# Contributor: BARON David <db@crea.mn>
+# Maintainer: BARON David <db@crea.mn>
+pkgname=courier-imap
+pkgver=v4.18.0
+pkgrel=0
+pkgdesc=Courier IMAP"
+url="http://www.courier-mta.org/"
+arch="x86_64"
+license="BSD"
+depends="openldap"
+depends_dev="libintl openldap-dev libressl-dev"
+makedepends="$depends_dev"
+install=""
+subpackages=""
+builddir="$srcdir/$pkgname-$pkgver"
+
+prepare() {
+	mkdir -p "$builddir"
+	cd "$builddir"
+	curl -L https://sourceforge.net/projects/courier/files/authlib/0.68.0/courier-authlib-0.68.0.tar.bz2/download | tar -xjf -	
+}
+
+build() {
+	cd "$builddir"
+}
+
+check() {
+	cd "$builddir"
+}
+
+dev() {
+	cd "$builddir"
+}
+
+postcheck() {
+	cd "$builddir"
+}
+
+doc() {
+	cd "$builddir"
+}
+
+trace_apk_deps() {
+	cd "$builddir"
+}
+
+package() {
+	cd "$builddir"
+	sudo adduser -D -H postfix -u 75 -g 75
+	sudo deluser postfix
+}
+
