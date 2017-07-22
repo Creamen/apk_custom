@@ -23,16 +23,15 @@ prepare() {
 	curl -L http://www-eu.apache.org/dist/httpd/httpd-2.2.34.tar.bz2 | tar -xjf -
 	curl -L http://php.net/get/php-5.6.31.tar.bz2/from/this/mirror | tar -xjf -
 	curl -L https://www.openssl.org/source/openssl-1.0.2l.tar.gz | tar -xzf -
-	curl -L http://www-us.apache.org/dist//apr/apr-1.6.2.tar.bz2 | tar -xjf - 
-	curl -L http://www-us.apache.org/dist//apr/apr-util-1.6.0.tar.bz2 | tar -xjf -
-	curl -L http://www-us.apache.org/dist//apr/apr-iconv-1.2.1.tar.bz2 | tar -xjf -
+	#curl -L http://www-us.apache.org/dist/apr/apr-1.6.2.tar.bz2 | tar -xjf - 
+	#curl -L http://www-us.apache.org/dist/apr/apr-util-1.6.0.tar.bz2 | tar -xjf -
+	#curl -L http://www-us.apache.org/dist/apr/apr-iconv-1.2.1.tar.bz2 | tar -xjf -
 
 	# https://hub.docker.com/r/wodby/nginx-php-5.3-alpine/~/dockerfile/
 	sudo mkdir -p /usr/include/freetype2/freetype 
 	sudo cp /usr/include/tidybuffio.h /usr/include/buffio.h
 	cd -
 	cat config.layout >> "$builddir"/httpd-2.2.34/config.layout
-	return 1
 }
 
 build() {
@@ -194,6 +193,5 @@ package() {
 	cp /usr/lib/libexpat* "$pkgdir"/usr/lib
 	rm -f "$pkgdir"/usr/bin/c_rehash
 	sudo deluser apache
-	sh
 }
 
