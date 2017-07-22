@@ -3,12 +3,12 @@
 pkgname=courier-imap
 pkgver=v4.18.0
 pkgrel=0
-pkgdesc=Courier IMAP"
+pkgdesc="Courier IMAP"
 url="http://www.courier-mta.org/"
 arch="x86_64"
 license="BSD"
-depends="openldap"
-depends_dev="libintl openldap-dev libressl-dev"
+depends="courier-authlib courier-unicode"
+depends_dev="courier-authlib courier-unicode db-dev"
 makedepends="$depends_dev"
 install=""
 subpackages=""
@@ -17,11 +17,15 @@ builddir="$srcdir/$pkgname-$pkgver"
 prepare() {
 	mkdir -p "$builddir"
 	cd "$builddir"
-	curl -L https://sourceforge.net/projects/courier/files/authlib/0.68.0/courier-authlib-0.68.0.tar.bz2/download | tar -xjf -	
+	
+	curl -L https://sourceforge.net/projects/courier/files/imap/4.18.0/courier-imap-4.18.0.tar.bz2/download | tar -xjf -
 }
 
 build() {
 	cd "$builddir"
+	cd courier-imap-4.18.0
+	./configure --prefix=/usr --with-waitfunc=wait
+	make -j16
 }
 
 check() {
@@ -46,7 +50,7 @@ trace_apk_deps() {
 
 package() {
 	cd "$builddir"
-	sudo adduser -D -H postfix -u 75 -g 75
-	sudo deluser postfix
+	cd courier-imap-4.18.0
+	make -j1 DESTDIR="$pkgdir" install
 }
 
