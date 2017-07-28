@@ -43,8 +43,9 @@ doc() {
 
 package() {
 	cd "$srcdir"/geoip-1.1.1
-	install -d "$pkgdir"/run/httpd/etc/php7/conf.d || return 1
+	install -d "$pkgdir"/etc/php7/conf.d || return 1
 	make install INSTALL_ROOT="$pkgdir"/
-	echo 'extension=geoip.so' > "$pkgdir"/run/httpd/etc/php7/conf.d/geoip.ini
+	echo 'extension=geoip.so' > "$pkgdir"/etc/php7/conf.d/geoip.ini
+	echo 'geoip.custom_directory=/run/httpd/sites/creamen.net/etc/geoIP' >> "$pkgdir"/etc/php7/conf.d/geoip.ini
 }
 
