@@ -1,0 +1,45 @@
+# Contributor: BARON David <db@crea.mn>
+# Maintainer: BARON David <db@crea.mn>
+pkgname=php7-geoip
+pkgver=v1.1.1
+pkgrel=0
+pkgdesc="GeoIP PHP extension"
+url="https://pecl.php.net/package/geoip"
+arch="x86_64"
+license="GPLv2"
+depends="php7-zlib geoip"
+depends_dev="php7-pear geoip-dev"
+makedepends="$depends_dev"
+install=""
+subpackages=""
+builddir="$srcdir/$pkgname-$pkgver"
+
+prepare() {
+	cd "$srcdir"
+	curl -L https://pecl.php.net/get/geoip-1.1.1.tgz | tar -xzf -
+	sh
+}
+
+build() {
+	cd "$src1dir"/geoip-1.1.1
+}
+
+check() {
+	cd "$src1dir"/geoip-1.1.1
+}
+
+dev() {
+	cd "$src1dir"/geoip-1.1.1
+}
+
+doc() {
+	cd "$src1dir"/geoip-1.1.1
+}
+
+package() {
+	cd "$src1dir"/geoip-1.1.1
+	install -d "$pkgdir"/run/httpd/etc/php7/conf.d || return 1
+	make install INSTALL_ROOT="$pkgdir"/
+	echo 'extension=geoip.so' > "$pkgdir"/run/httpd/etc/php7/conf.d/geoip.ini
+}
+
