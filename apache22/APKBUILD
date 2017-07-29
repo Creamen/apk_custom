@@ -61,11 +61,11 @@ build() {
 	--libdir=/usr/lib/php5 \
 	--datadir=/usr/share/php5 \
 	--sysconfdir=/usr/etc/php5 \
-	--localstatedir=/var/log/httpd \
+	--localstatedir=/run/httpd/var/httpd \
 	--with-pic \
 	--with-pear=/usr/share/php5 \
-	--with-config-file-path=/run/httpd/etc/php5 \
-	--with-config-file-scan-dir=/run/httpd/etc/php5/conf.d \
+	--with-config-file-path=/etc/php5 \
+	--with-config-file-scan-dir=/etc/php5/conf.d \
 	--disable-short-tags \
 	--enable-bcmath=shared \
 	--with-bz2=shared \
@@ -146,7 +146,7 @@ build() {
 	--with-zlib-dir=/usr \
 	--disable-phpdbg \
 	--disable-cgi \
-	--disable-cli \
+	--enable-cli \
 	--with-apxs2 \
 	build_alias=x86_64-alpine-linux-musl \
 	host_alias=x86_64-alpine-linux-musl 
@@ -176,16 +176,18 @@ trace_apk_deps() {
 
 package() {
 	cd "$builddir"
+	#sudo addgroup -g 1001 apache
 	sudo adduser -D -H apache -u 1001 -g 1001
 	sudo rm -f /usr/lib/{libexpat.a,libexpat.so,libexpat.so.0,libexpat.so.0.5.0}
+	install -d "$pkgdir"/run/httpd/etc/apache2/2.2 "$pkgdir"/run/httpd/etc/php5 "$pkgdir"/etc/php5/conf.d || return 1
 	cd openssl-1.0.2l
 	make -j1  INSTALL_PREFIX="$pkgdir" install
 	cd ../httpd-2.2.34
 	make -j1 DESTDIR="$pkgdir" install
 	cd ../php-5.6.31
 	PATH="$pkgdir"/usr/bin:"$pkgdir"/usr/sbin:$PATH make -j1 INSTALL_ROOT="$pkgdir"/ install
+	cp php.ini-production "$pkgdir"/etc/php5/php.ini
 	cd ..
-	install -d "$pkgdir"/run/httpd/etc/apache2/2.2 "$pkgdir"/run/httpd/etc/php5 || return 1
 	chown -R apache:apache "$pkgdir"/etc/apache2 "$pkgdir"/run/httpd/etc/apache2/2.2 "$pkgdir"/run/httpd/etc/php5 
 	find "$pkgdir"/ -type d -exec chmod +w {} \;
 	find "$pkgdir"/ -type f -exec chmod +w {} \;
