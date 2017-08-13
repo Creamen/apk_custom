@@ -66,6 +66,7 @@ prepare() {
 	fetch_go github.com/kumina/postfix_exporter
 	fetch_go github.com/neezgee/apache_exporter
 	fetch_go github.com/prometheus/node_exporter
+	fetch_go github.com/dewey/rtorrent_exporter
 
 	fetch_git https://github.com/dewey/rtorrent_exporter master rtorrent
 
