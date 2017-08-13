@@ -29,7 +29,7 @@ prepare() {
 		fmt=$(echo ${action} | grep -oE '\.[^.]+$' || echo '-')
 		sub_fmt=$(echo ${action} | grep -oE "[^.]+${fmt}$" || echo $fmt)
 
-		case $sub_fmt in
+		case ${sub_fmt} in
 		.gz)
 			curl -Ls $1 | gzip -dv | while read; do echo -n '.'; done
 			;;
@@ -38,6 +38,7 @@ prepare() {
 			;;
 		-)
 			curl -LO $1 2>&1 | while read; do echo -n '.'; done
+			chmod +x ${action}
 			;;
 		*)
 			echo -ne "\nUnknown action ($1):($sub_fmt) !"
@@ -47,6 +48,7 @@ prepare() {
 	}
 
 	cd "$srcdir"
+
 	go get -v github.com/digitalocean/bind_exporter
 	go get -v github.com/dewey/rtorrent_exporter
 	git clone https://github.com/dewey/rtorrent_exporter rtorrent
@@ -86,7 +88,7 @@ prepare() {
 
 build() {
 	cd "$srcdir"
-	go build -v github.com/digitalocean/bind_exporter
+	go build github.com/digitalocean/bind_exporter
 	GOOS=linux GOARCH=amd64 go build rtorrent/app.go && mv app rtorrent_exporter
 }
 
@@ -104,16 +106,20 @@ doc() {
 
 package() {
 	cd "$srcdir"
-	install -d "$pkgdir"/run/httpd/sites/cgit/cgit-css "$pkgdir"/run/httpd/sites/cgit/users || return 1
-	install cgit "$pkgdir"/run/httpd/sites/cgit || return 1
-	install cgit-doc.css cgit.css cgit.png "$pkgdir"/run/httpd/sites/cgit/cgit-css || return 1
-	install $srcdir/../ext/Parsedown.php \
-		$srcdir/../ext/parseMarkdown_wrapper.php \
-		$srcdir/../ext/favicon.ico \
-		$srcdir/../ext/owner.sh \
-		$srcdir/../ext/roffit \
-		$srcdir/../ext/provisioning.sh \
-		$srcdir/../ext/syntax-highlighting.sh "$pkgdir"/run/httpd/sites/cgit || return 1
-	install $srcdir/../ext/users/* "$pkgdir"/run/httpd/sites/cgit/users || return 1
+	install -d "$pkgdir"/run/monitoring/etc "$pkgdir"/run/monitoring/bin
+
+	install $srcdir/bind_exporter \
+		$srcdir/rtorrent_exporter \
+		$srcdir/apache_exporter_linux_amd64 \
+		$srcdir/postgres_exporter \
+		$srcdir/grafana-*/bin/grafana-server \
+		$srcdir/prometheus-*/prometheus \
+		$srcdir/mysqld_exporter*/mysqld_exporter \
+		$srcdir/pushgateway*/pushgateway \
+		"$pkgdir"/run/monitoring/bin
+
+	install $srcdir/grafana-*/conf/defaults.ini \
+		$srcdir/prometheus-*/prometheus.yml \
+		"$pkgdir"/run/monitoring/etc
 }
 
