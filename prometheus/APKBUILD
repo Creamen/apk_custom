@@ -1,0 +1,119 @@
+# Contributor: BARON David <db@crea.mn>
+# Maintainer: BARON David <db@crea.mn>
+pkgname=prometheus
+pkgver=v1.7
+pkgrel=1
+pkgdesc="prometheus - Monitoring4All"
+url="https://prometheus.io"
+arch="x86_64"
+license="GPLv2"
+depends="highlight lua-dev gettext-dev libressl-dev zlib-dev git libintl perl go"
+makedepends="$depends"
+install=""
+subpackages=""
+builddir="$srcdir/$pkgname-$pkgver"
+
+prepare() {
+	function get_version {
+		n=${2-3}                                                       
+		#git ls-remote --tags https://github.com/$1 | awk -F"$(printf '\t')" "match(\$2, /v([[:digit:]]+\.?){${n}}\$/ ,a) { if(substr(a[0],2) > v) v=substr(a[0],2); } END { printf v; } "                                                                                          
+		echo -n "Fetching $1 ... " > /proc/self/fd/2
+		git ls-remote --tags https://github.com/$1 | grep -oE "v([0-9]+\.?){${n}}\$" | sort -t'.' -k'1,2' | tail -1 | cut -b2- | tee /proc/self/fd/2
+	}
+
+	function fetch_url {
+		action=$(basename $1)
+
+		echo -n "Fetching [$action] ..."
+
+		fmt=$(echo ${action} | grep -oE '\.[^.]+$' || echo '-')
+		sub_fmt=$(echo ${action} | grep -oE "[^.]+${fmt}$" || echo $fmt)
+
+		case $sub_fmt in
+		.gz)
+			curl -Ls $1 | gzip -dv | while read; do echo -n '.'; done
+			;;
+		tar.gz)
+			curl -Ls $1 | tar -xvzf - | while read; do echo -n '.'; done
+			;;
+		-)
+			curl -LO $1 2>&1 | while read; do echo -n '.'; done
+			;;
+		*)
+			echo -ne "\nUnknown action ($1):($sub_fmt) !"
+			;;
+		esac
+		echo
+	}
+
+	cd "$srcdir"
+	go get -v github.com/digitalocean/bind_exporter
+	go get -v github.com/dewey/rtorrent_exporter
+	git clone https://github.com/dewey/rtorrent_exporter rtorrent
+
+	# https://github.com/neezgee/apache_exporter                       
+	APACHE_EXPORTER_VERSION=$(get_version neezgee/apache_exporter 2)   
+	APACHE_EXPORTER_URL=https://github.com/neezgee/apache_exporter/releases/download/v${APACHE_EXPORTER_VERSION}/apache_exporter_linux_amd64                                                                                                                                       
+
+	# https://github.com/wrouesnel/postgres_exporter                   
+	POSTGRESQL_EXPORTER_VERSION=$(get_version wrouesnel/postgres_exporter)                                                                 
+	POSTGRESQL_EXPORTER_URL=https://github.com/wrouesnel/postgres_exporter/releases/download/v${POSTGRESQL_EXPORTER_VERSION}/postgres_exporter                                                                                                                                     
+
+	MYSQLD_EXPORTER_VERSION=$(get_version prometheus/mysqld_exporter)  
+	MYSQLD_EXPORTER_URL=https://github.com/prometheus/mysqld_exporter/releases/download/v${MYSQLD_EXPORTER_VERSION}/mysqld_exporter-${MYSQLD_EXPORTER_VERSION}.linux-amd64.tar.gz                                                                                                  
+
+	PROMETHEUS_VERSION=$(get_version prometheus/prometheus)            
+	PROMETHEUS_URL=https://github.com/prometheus/prometheus/releases/download/v${PROMETHEUS_VERSION}/prometheus-${PROMETHEUS_VERSION}.linux-amd64.tar.gz                                                                                                                           
+
+	GRAFANA_VERSION=$(get_version grafana/grafana)                     
+	GRAFANA_URL=https://s3-us-west-2.amazonaws.com/grafana-releases/release/grafana-${GRAFANA_VERSION}.linux-x64.tar.gz                    
+
+	NODE_EXPORTER_VERSION=$(get_version prometheus/node_exporter)      
+	NODE_EXPORTER_URL=https://github.com/prometheus/node_exporter/releases/download/v${NODE_EXPORTER_VERSION}/node_exporter-${NODE_EXPORTER_VERSION}.linux-amd64.tar.gz                                                                                                            
+
+	PUSHGATEWAY_VERSION=$(get_version prometheus/pushgateway)          
+	PUSHGATEWAY_URL=https://github.com/prometheus/pushgateway/releases/download/v${PUSHGATEWAY_VERSION}/pushgateway-${PUSHGATEWAY_VERSION}.linux-amd64.tar.gz                                                                                                                      
+
+	fetch_url ${APACHE_EXPORTER_URL}                                   
+	fetch_url ${POSTGRESQL_EXPORTER_URL}                               
+	fetch_url ${MYSQLD_EXPORTER_URL}                                   
+
+	fetch_url ${PROMETHEUS_URL}                                        
+	fetch_url ${GRAFANA_URL}                                           
+	fetch_url ${PUSHGATEWAY_URL}
+
+}
+
+build() {
+	cd "$srcdir"
+	go build -v github.com/digitalocean/bind_exporter
+	GOOS=linux GOARCH=amd64 go build rtorrent/app.go && mv app rtorrent_exporter
+}
+
+check() {
+	cd "$srcdir"
+}
+
+dev() {
+	cd "$srcdir"
+}
+
+doc() {
+	cd "$srcdir"
+}
+
+package() {
+	cd "$srcdir"
+	install -d "$pkgdir"/run/httpd/sites/cgit/cgit-css "$pkgdir"/run/httpd/sites/cgit/users || return 1
+	install cgit "$pkgdir"/run/httpd/sites/cgit || return 1
+	install cgit-doc.css cgit.css cgit.png "$pkgdir"/run/httpd/sites/cgit/cgit-css || return 1
+	install $srcdir/../ext/Parsedown.php \
+		$srcdir/../ext/parseMarkdown_wrapper.php \
+		$srcdir/../ext/favicon.ico \
+		$srcdir/../ext/owner.sh \
+		$srcdir/../ext/roffit \
+		$srcdir/../ext/provisioning.sh \
+		$srcdir/../ext/syntax-highlighting.sh "$pkgdir"/run/httpd/sites/cgit || return 1
+	install $srcdir/../ext/users/* "$pkgdir"/run/httpd/sites/cgit/users || return 1
+}
+
