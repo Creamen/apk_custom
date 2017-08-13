@@ -7,29 +7,28 @@ pkgdesc="prometheus - Monitoring4All"
 url="https://prometheus.io"
 arch="x86_64"
 license="GPLv2"
-depends="highlight lua-dev gettext-dev libressl-dev zlib-dev git libintl perl go"
+depends=""
+depends_dev="lua-dev libressl-dev zlib-dev git libintl go nodejs-npm python"
 makedepends="$depends"
 install=""
 subpackages=""
 builddir="$srcdir/$pkgname-$pkgver"
 
-prepare() {
-	function get_version {
-		n=${2-3}                                                       
-		#git ls-remote --tags https://github.com/$1 | awk -F"$(printf '\t')" "match(\$2, /v([[:digit:]]+\.?){${n}}\$/ ,a) { if(substr(a[0],2) > v) v=substr(a[0],2); } END { printf v; } "                                                                                          
-		echo -n "Fetching $1 ... " > /proc/self/fd/2
-		git ls-remote --tags https://github.com/$1 | grep -oE "v([0-9]+\.?){${n}}\$" | sort -t'.' -k'1,2' | tail -1 | cut -b2- | tee /proc/self/fd/2
-	}
+function get_version {
+	n=${2-3}                                                       
+	echo -n "Get last version for $1 ... " > /proc/self/fd/2
+	git ls-remote --tags https://github.com/$1 | gawk -F"$(printf '\t')" "match(\$2, /v([[:digit:]]+\.?){${n}}\$/ ,a) { if(substr(a[0],2) > v) v=substr(a[0],2); } END { printf(\"%s\\n\", v); } " | tee /proc/self/fd/2
+}
 
-	function fetch_url {
-		action=$(basename $1)
+function fetch_url {
+	action=$(basename $1)
 
-		echo -n "Fetching [$action] ..."
+	echo -n "Fetching for [$action] ..."
 
-		fmt=$(echo ${action} | grep -oE '\.[^.]+$' || echo '-')
-		sub_fmt=$(echo ${action} | grep -oE "[^.]+${fmt}$" || echo $fmt)
+	fmt=$(echo ${action} | grep -oE '\.[^.]+$' || echo '-')
+	sub_fmt=$(echo ${action} | grep -oE "[^.]+${fmt}$" || echo $fmt)
 
-		case ${sub_fmt} in
+	case ${sub_fmt} in
 		.gz)
 			curl -Ls $1 | gzip -dv | while read; do echo -n '.'; done
 			;;
@@ -43,21 +42,36 @@ prepare() {
 		*)
 			echo -ne "\nUnknown action ($1):($sub_fmt) !"
 			;;
-		esac
-		echo
-	}
+	esac
+	echo
+}
 
+function fetch_go() {
+	echo -n "Fetching go [$1] ..."
+	go get -v $1 2>&1 | while read; do echo -n '.'; done
+	echo
+}
+
+function fetch_git() {
+	echo -n "Fetching git [$1] ..."
+	git clone -b ${2-master} $1 ${3-} 2>&1 | while read; do echo -n '.'; done
+	echo
+}
+
+prepare() {
 	cd "$srcdir"
 
-	go get -v github.com/digitalocean/bind_exporter
-	go get -v github.com/dewey/rtorrent_exporter
-	git clone https://github.com/dewey/rtorrent_exporter rtorrent
+	# XXX : Build for a specific tag !!!
+	fetch_go github.com/digitalocean/bind_exporter
+	fetch_go github.com/kumina/postfix_exporter
+	fetch_go github.com/neezgee/apache_exporter
+	fetch_go github.com/prometheus/node_exporter
 
-	# https://github.com/neezgee/apache_exporter                       
-	APACHE_EXPORTER_VERSION=$(get_version neezgee/apache_exporter 2)   
-	APACHE_EXPORTER_URL=https://github.com/neezgee/apache_exporter/releases/download/v${APACHE_EXPORTER_VERSION}/apache_exporter_linux_amd64                                                                                                                                       
+	fetch_git https://github.com/dewey/rtorrent_exporter master rtorrent
 
-	# https://github.com/wrouesnel/postgres_exporter                   
+	#APACHE_EXPORTER_VERSION=$(get_version neezgee/apache_exporter 2)   
+	#APACHE_EXPORTER_URL=https://github.com/neezgee/apache_exporter/releases/download/v${APACHE_EXPORTER_VERSION}/apache_exporter_linux_amd64                                                                                                                                       
+
 	POSTGRESQL_EXPORTER_VERSION=$(get_version wrouesnel/postgres_exporter)                                                                 
 	POSTGRESQL_EXPORTER_URL=https://github.com/wrouesnel/postgres_exporter/releases/download/v${POSTGRESQL_EXPORTER_VERSION}/postgres_exporter                                                                                                                                     
 
@@ -67,29 +81,73 @@ prepare() {
 	PROMETHEUS_VERSION=$(get_version prometheus/prometheus)            
 	PROMETHEUS_URL=https://github.com/prometheus/prometheus/releases/download/v${PROMETHEUS_VERSION}/prometheus-${PROMETHEUS_VERSION}.linux-amd64.tar.gz                                                                                                                           
 
-	GRAFANA_VERSION=$(get_version grafana/grafana)                     
-	GRAFANA_URL=https://s3-us-west-2.amazonaws.com/grafana-releases/release/grafana-${GRAFANA_VERSION}.linux-x64.tar.gz                    
+	#GRAFANA_VERSION=$(get_version grafana/grafana)                     
+	#GRAFANA_URL=https://s3-us-west-2.amazonaws.com/grafana-releases/release/grafana-${GRAFANA_VERSION}.linux-x64.tar.gz                    
 
-	NODE_EXPORTER_VERSION=$(get_version prometheus/node_exporter)      
-	NODE_EXPORTER_URL=https://github.com/prometheus/node_exporter/releases/download/v${NODE_EXPORTER_VERSION}/node_exporter-${NODE_EXPORTER_VERSION}.linux-amd64.tar.gz                                                                                                            
+	#NODE_EXPORTER_VERSION=$(get_version prometheus/node_exporter)      
+	#NODE_EXPORTER_URL=https://github.com/prometheus/node_exporter/releases/download/v${NODE_EXPORTER_VERSION}/node_exporter-${NODE_EXPORTER_VERSION}.linux-amd64.tar.gz                                                                                                            
 
 	PUSHGATEWAY_VERSION=$(get_version prometheus/pushgateway)          
 	PUSHGATEWAY_URL=https://github.com/prometheus/pushgateway/releases/download/v${PUSHGATEWAY_VERSION}/pushgateway-${PUSHGATEWAY_VERSION}.linux-amd64.tar.gz                                                                                                                      
 
-	fetch_url ${APACHE_EXPORTER_URL}                                   
-	fetch_url ${POSTGRESQL_EXPORTER_URL}                               
-	fetch_url ${MYSQLD_EXPORTER_URL}                                   
-
-	fetch_url ${PROMETHEUS_URL}                                        
-	fetch_url ${GRAFANA_URL}                                           
+	fetch_url ${POSTGRESQL_EXPORTER_URL}
+	fetch_url ${MYSQLD_EXPORTER_URL}
 	fetch_url ${PUSHGATEWAY_URL}
 
+	fetch_url ${PROMETHEUS_URL}
+}
+
+function build_go() {
+	echo -n "Building go [$1] ..."
+	GOOS=linux GOARCH=amd64 go build -v $1 2>&1 | while read; do echo -n '.'; done
+	if [ ! -z "$2" ]; then
+		eval $2
+	fi
+	echo
 }
 
 build() {
 	cd "$srcdir"
-	go build github.com/digitalocean/bind_exporter
-	GOOS=linux GOARCH=amd64 go build rtorrent/app.go && mv app rtorrent_exporter
+	build_go github.com/digitalocean/bind_exporter
+	build_go github.com/kumina/postfix_exporter
+	build_go github.com/neezgee/apache_exporter
+	build_go github.com/prometheus/node_exporter
+	build_go rtorrent/app.go "mv app rtorrent_exporter"
+
+	# Grafana the rocky horror show ...
+	GRAFANA_VERSION=$(get_version grafana/grafana)
+	if [ ! -f ${GOPATH}/src/github.com/grafana/grafana/dist/grafana-${GRAFANA_VERSION}.linux-x64.tar.gz ]; then
+		echo -n "Building Grafana ..."
+		rm -rf ${GOPATH}/src/github.com/grafana/grafana
+		# XXX : Use fetch_git ?
+		git clone -q -b v${GRAFANA_VERSION} https://github.com/grafana/grafana ${GOPATH}/src/github.com/grafana/grafana 
+		cd ${GOPATH}/src/github.com/grafana/grafana
+
+		go run build.go setup 2>&1 | while read; do echo -n '.'; done
+		go run build.go build 2>&1 | while read; do echo -n '.'; done
+		echo 
+
+		# More horrors ...
+		# https://superuser.com/questions/1125969/how-to-install-npm-in-alpine-linux
+		# https://github.com/alkersan/grafana-musl/blob/master/build.sh
+		npm install --no-optional 2>&1 | while read; do echo -n '.'; done
+		# XXX : Relevant only for v4.4.3 - Have a specific hook for current building version
+		# of Grafana ?
+		npm install --no-optional grunt-contrib-compress grunt-sass@2.0.0 2>&1 | while read; do echo -n '.'; done
+		$(npm bin)/grunt build build-post-process --force 2>&1 | while read; do echo -n '.'; done
+
+		rm -rf tmp/vendor/phantomjs tmp/bin/*.md5
+		strip tmp/bin/*
+
+		$(npm bin)/grunt compress 2>&1 | while read; do echo -n '.'; done
+	else
+		echo "HIT Cache for dist/grafana-${GRAFANA_VERSION}.linux-x64.tar.gz !"
+	fi
+	mkdir -p $srcdir/grafana
+	gzip -dc ${GOPATH}/src/github.com/grafana/grafana/dist/grafana-${GRAFANA_VERSION}.linux-x64.tar.gz | tar -C $srcdir/grafana --strip-components=1 -xvf - 2>&1 | while read; do echo -n '.'; done
+	echo
+
+	echo "All Done !"
 }
 
 check() {
@@ -110,16 +168,19 @@ package() {
 
 	install $srcdir/bind_exporter \
 		$srcdir/rtorrent_exporter \
-		$srcdir/apache_exporter_linux_amd64 \
+		$srcdir/apache_exporter \
 		$srcdir/postgres_exporter \
-		$srcdir/grafana-*/bin/grafana-server \
+		$srcdir/postfix_exporter \
+		$srcdir/node_exporter \
 		$srcdir/prometheus-*/prometheus \
 		$srcdir/mysqld_exporter*/mysqld_exporter \
 		$srcdir/pushgateway*/pushgateway \
 		"$pkgdir"/run/monitoring/bin
 
-	install $srcdir/grafana-*/conf/defaults.ini \
+	install $srcdir/grafana/conf/defaults.ini \
 		$srcdir/prometheus-*/prometheus.yml \
 		"$pkgdir"/run/monitoring/etc
+
+	cp -r $srcdir/grafana "$pkgdir"/run/monitoring/
 }
 
