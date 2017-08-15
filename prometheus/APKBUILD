@@ -69,9 +69,15 @@ prepare() {
 	fetch_go github.com/dewey/rtorrent_exporter
 
 	fetch_git https://github.com/dewey/rtorrent_exporter master rtorrent
+	fetch_git https://github.com/jcollie/openldap_exporter master
 
+	# Provided bin depends on an unknow lib - So we have to build it ownself !
 	#APACHE_EXPORTER_VERSION=$(get_version neezgee/apache_exporter 2)   
 	#APACHE_EXPORTER_URL=https://github.com/neezgee/apache_exporter/releases/download/v${APACHE_EXPORTER_VERSION}/apache_exporter_linux_amd64                                                                                                                                       
+	#GRAFANA_VERSION=$(get_version grafana/grafana)                     
+	#GRAFANA_URL=https://s3-us-west-2.amazonaws.com/grafana-releases/release/grafana-${GRAFANA_VERSION}.linux-x64.tar.gz                    
+	#NODE_EXPORTER_VERSION=$(get_version prometheus/node_exporter)      
+	#NODE_EXPORTER_URL=https://github.com/prometheus/node_exporter/releases/download/v${NODE_EXPORTER_VERSION}/node_exporter-${NODE_EXPORTER_VERSION}.linux-amd64.tar.gz                                                                                                            
 
 	POSTGRESQL_EXPORTER_VERSION=$(get_version wrouesnel/postgres_exporter)                                                                 
 	POSTGRESQL_EXPORTER_URL=https://github.com/wrouesnel/postgres_exporter/releases/download/v${POSTGRESQL_EXPORTER_VERSION}/postgres_exporter                                                                                                                                     
@@ -81,12 +87,6 @@ prepare() {
 
 	PROMETHEUS_VERSION=$(get_version prometheus/prometheus)            
 	PROMETHEUS_URL=https://github.com/prometheus/prometheus/releases/download/v${PROMETHEUS_VERSION}/prometheus-${PROMETHEUS_VERSION}.linux-amd64.tar.gz                                                                                                                           
-
-	#GRAFANA_VERSION=$(get_version grafana/grafana)                     
-	#GRAFANA_URL=https://s3-us-west-2.amazonaws.com/grafana-releases/release/grafana-${GRAFANA_VERSION}.linux-x64.tar.gz                    
-
-	#NODE_EXPORTER_VERSION=$(get_version prometheus/node_exporter)      
-	#NODE_EXPORTER_URL=https://github.com/prometheus/node_exporter/releases/download/v${NODE_EXPORTER_VERSION}/node_exporter-${NODE_EXPORTER_VERSION}.linux-amd64.tar.gz                                                                                                            
 
 	PUSHGATEWAY_VERSION=$(get_version prometheus/pushgateway)          
 	PUSHGATEWAY_URL=https://github.com/prometheus/pushgateway/releases/download/v${PUSHGATEWAY_VERSION}/pushgateway-${PUSHGATEWAY_VERSION}.linux-amd64.tar.gz                                                                                                                      
@@ -114,33 +114,49 @@ build() {
 	build_go github.com/neezgee/apache_exporter
 	build_go github.com/prometheus/node_exporter
 	build_go rtorrent/app.go "mv app rtorrent_exporter"
+	
+	# Python
+	cd openldap_exporter
+	virtualenv --python=/usr/bin/python2 openldap_exporter
+	openldap_exporter/bin/pip install --requirement requirements.txt
+	cp openldap_exporter.py openldap_exporter
+	cp $startdir/ext/openldap_exporter.yml openldap_exporter
+	cd -
 
 	# Grafana the rocky horror show ...
 	GRAFANA_VERSION=$(get_version grafana/grafana)
 	if [ ! -f ${GOPATH}/src/github.com/grafana/grafana/dist/grafana-${GRAFANA_VERSION}.linux-x64.tar.gz ]; then
 		echo -n "Building Grafana ..."
+
 		rm -rf ${GOPATH}/src/github.com/grafana/grafana
-		# XXX : Use fetch_git ?
-		git clone -q -b v${GRAFANA_VERSION} https://github.com/grafana/grafana ${GOPATH}/src/github.com/grafana/grafana 
+		fetch_git https://github.com/grafana/grafana v${GRAFANA_VERSION} ${GOPATH}/src/github.com/grafana/grafana
+		echo -n 1
+		
 		cd ${GOPATH}/src/github.com/grafana/grafana
 
 		go run build.go setup 2>&1 | while read; do echo -n '.'; done
+		echo -n 2 
 		go run build.go build 2>&1 | while read; do echo -n '.'; done
+		echo -n 3
 		echo 
 
 		# More horrors ...
 		# https://superuser.com/questions/1125969/how-to-install-npm-in-alpine-linux
 		# https://github.com/alkersan/grafana-musl/blob/master/build.sh
 		npm install --no-optional 2>&1 | while read; do echo -n '.'; done
+		echo -n 4
 		# XXX : Relevant only for v4.4.3 - Have a specific hook for current building version
 		# of Grafana ?
 		npm install --no-optional grunt-contrib-compress grunt-sass@2.0.0 2>&1 | while read; do echo -n '.'; done
+		echo -n 5
 		$(npm bin)/grunt build build-post-process --force 2>&1 | while read; do echo -n '.'; done
+		echo -n 6
 
 		rm -rf tmp/vendor/phantomjs tmp/bin/*.md5
 		strip tmp/bin/*
 
 		$(npm bin)/grunt compress 2>&1 | while read; do echo -n '.'; done
+		echo -n 7
 	else
 		echo "HIT Cache for dist/grafana-${GRAFANA_VERSION}.linux-x64.tar.gz !"
 	fi
@@ -179,9 +195,10 @@ package() {
 		"$pkgdir"/run/monitoring/bin
 
 	install $srcdir/grafana/conf/defaults.ini \
-		$srcdir/prometheus-*/prometheus.yml \
+		$startdir/ext/prometheus.yml \
 		"$pkgdir"/run/monitoring/etc
 
+	cp -r $srcdir/openldap_exporter "$pkgdir"/run/monitoring/
 	cp -r $srcdir/grafana "$pkgdir"/run/monitoring/
 }
 
