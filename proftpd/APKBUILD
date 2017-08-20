@@ -1,0 +1,58 @@
+# Contributor: BARON David <db@crea.mn>
+# Maintainer: BARON David <db@crea.mn>
+pkgname=proftpd
+pkgver=v1.3.6
+pkgrel=1
+pkgdesc="ProFTPD - Highly configurable GPL-licensed FTP server software"
+url="https://www.proftpd.org"
+arch="x86_64"
+license="GPLv2"
+depends=""
+depends_dev="git postgresql-dev openldap-dev gettext-dev libressl-dev zlib-dev git"
+makedepends="$depends_dev"
+install=""
+subpackages=""
+builddir="$srcdir/$pkgname-$pkgver"
+
+prepare() {
+	cd "$srcdir"
+	git clone -q -b $pkgver https://github.com/proftpd/proftpd.git $pkgname-$pkgver || return 1	
+}
+
+build() {
+	cd "$builddir"
+	./configure --prefix=/usr --sysconfdir=/etc --localstatedir=/run/proftpd/var \
+	--disable-auth-pam --enable-sendfile --enable-ctrls \
+	--with-modules=\
+mod_ldap:\
+mod_quotatab:\
+mod_quotatab_sql:\
+mod_quotatab_ldap:\
+mod_shaper:\
+mod_tls:\
+mod_tls_redis:\
+mod_sql:\
+mod_sql_postgres:\
+mod_sftp
+
+	make -j16
+}
+
+check() {
+	cd "$builddir"
+}
+
+dev() {
+	cd "$builddir"
+}
+
+doc() {
+	cd "$builddir"
+}
+
+package() {
+	cd "$builddir"
+	make install DESTDIR="$pkgdir"/
+	find "$pkgdir"/usr/share/man -type f | xargs gzip
+}
+
