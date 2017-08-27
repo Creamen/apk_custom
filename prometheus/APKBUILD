@@ -67,6 +67,7 @@ prepare() {
 	fetch_go github.com/neezgee/apache_exporter
 	fetch_go github.com/prometheus/node_exporter
 	fetch_go github.com/dewey/rtorrent_exporter
+	fetch_go github.com/hnlq715/nginx-vts-exporter
 
 	fetch_git https://github.com/dewey/rtorrent_exporter master rtorrent
 	fetch_git https://github.com/jcollie/openldap_exporter master
@@ -113,6 +114,7 @@ build() {
 	build_go github.com/kumina/postfix_exporter
 	build_go github.com/neezgee/apache_exporter
 	build_go github.com/prometheus/node_exporter
+	build_go github.com/hnlq715/nginx-vts-exporter
 	build_go rtorrent/app.go "mv app rtorrent_exporter"
 	
 	# Python
