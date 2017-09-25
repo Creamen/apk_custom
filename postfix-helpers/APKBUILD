@@ -1,0 +1,58 @@
+# Contributor: BARON David <db@crea.mn>
+# Maintainer: BARON David <db@crea.mn>
+# https://hub.docker.com/r/combro2k/alpine-virtualmail/~/dockerfile/
+pkgname=postfix-helpers
+pkgver=v1.0
+pkgrel=1
+pkgdesc="Postfix helpers to fight against SPAM"
+url="http://www.postfix.org"
+arch="x86_64"
+license="GPLv2"
+depends="perl perl-unix-syslog perl-dbi perl-net-server perl-net-cidr-lite perl-netaddr-ip perl-mail-spf perl-sys-hostname-long perl-io-multiplex libmilter"
+depends_dev="git libmilter-dev openldap-dev libressl-dev libtool autoconf automake"
+makedepends="$depends_dev"
+install=""
+subpackages=""
+builddir="$srcdir/opendkim"
+
+prepare() {
+	cd "$srcdir"
+	git clone https://git.creamen.net/opendkim.git
+	git clone https://git.creamen.net/sqlgrey.git
+	curl -sL https://launchpad.net/postfix-policyd-spf-perl/trunk/release2.010/+download/postfix-policyd-spf-perl-2.010.tar.gz | tar -xzf -
+	curl -L -s https://cpanmin.us/ --output cpanm && chmod +x cpanm
+	./cpanm -v -n Mail::SPF::Query
+	sh 
+}
+
+build() {
+	cd "$builddir"
+	autoreconf -i
+	./configure --prefix=/usr --with-openldap --with-libcurl
+	make -j16
+}
+
+check() {
+	cd "$builddir"
+}
+
+dev() {
+	cd "$builddir"
+}
+
+doc() {
+	cd "$builddir"
+}
+
+package() {
+	cd "$builddir"
+	DESTDIR=$pkgdir/ make install
+	echo DESTDIR=$pkgdir/ make install
+	find "$pkgdir"/usr/share/man -type f | xargs gzip
+	cd ../postfix-policyd-spf-perl-2.010
+	cp postfix-policyd-spf-perl $pkgdir/usr/sbin
+	cd ../sqlgrey
+	cp sqlgrey $pkgdir/usr/sbin
+
+}
+
