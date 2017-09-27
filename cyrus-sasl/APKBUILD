@@ -1,0 +1,67 @@
+# Contributor: BARON David <db@crea.mn>
+# Maintainer: BARON David <db@crea.mn>
+# https://hub.docker.com/r/combro2k/alpine-virtualmail/~/dockerfile/
+pkgname=cyrus-sasl-ldap
+pkgver=2.1
+pkgrel=26
+pkgdesc="Cyrus-SASL authdaemon with LDAP support"
+url="https://www.cyrusimap.org/sasl/index.html"
+arch="x86_64"
+license="GPLv2"
+depends=""
+depends_dev="openldap-dev db-dev libressl-dev heimdal-dev autoconf automake libtool"
+makedepends="$depends_dev"
+install=""
+subpackages=""
+builddir="$srcdir/cyrus-sasl-2.1.26"
+
+prepare() {
+	cd "$srcdir"
+	curl -Ls ftp://ftp.cyrusimap.org/cyrus-sasl/cyrus-sasl-2.1.26.tar.gz | tar -xzf -
+}
+
+build() {
+	cd "$builddir"
+	./configure \
+		--prefix=/usr/local \
+		--sysconfdir=/etc \
+		--localstatedir=/var \
+		--disable-anon \
+		--enable-cram \
+		--enable-digest \
+		--enable-login \
+		--enable-ntlm \
+		--disable-otp \
+		--enable-plain \
+		--with-gss_impl=heimdal \
+		--with-devrandom=/dev/urandom \
+		--with-ldap \
+		--with-saslauthd=/var/run/saslauthd \
+		--mandir=/usr/local/share/man
+	make -j1
+}
+
+check() {
+	cd "$builddir"
+}
+
+postcheck() {
+	cd "$builddir"
+
+}
+
+dev() {
+	cd "$builddir"
+}
+
+doc() {
+	cd "$builddir"
+}
+
+package() {
+	cd "$builddir"
+	make -j1 DESTDIR="$pkgdir" install
+	install -d "$pkgdir"/var/run/saslauthd
+	find "$pkgdir"/usr/local/share/man -type f | xargs gzip -9 
+}
+
