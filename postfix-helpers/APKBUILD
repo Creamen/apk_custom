@@ -46,7 +46,6 @@ doc() {
 package() {
 	cd "$builddir"
 	DESTDIR=$pkgdir/ make install
-	echo DESTDIR=$pkgdir/ make install
 	find "$pkgdir"/usr/share/man -type f | xargs gzip
 	cd ../postfix-policyd-spf-perl-2.010
 	cp postfix-policyd-spf-perl $pkgdir/usr/sbin
