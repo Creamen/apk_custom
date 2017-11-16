@@ -1,0 +1,53 @@
+# Contributor: BARON David <db@crea.mn>
+# Maintainer: BARON David <db@crea.mn>
+pkgname=php5-redis
+pkgver=v3.1.4
+pkgrel=1
+pkgdesc="Redis PHP5 extension"
+url="https://pecl.php.net/package/redis/
+arch="x86_64"
+license="GPLv2"
+depends="php5-zlib"
+depends_dev="php5-pear php5-dev"
+makedepends="$depends_dev"
+install=""
+subpackages=""
+builddir="$srcdir/$pkgname-$pkgver"
+
+prepare() {
+	cd "$srcdir"
+	curl -L https://pecl.php.net/get/redis-3.1.4.tgz | tar -xzf -
+	cd redis-3.1.4
+
+	phpize --clean
+	phpize
+	./configure
+	make
+}
+
+build() {
+	cd "$srcdir"/redis-3.1.4
+}
+
+check() {
+	cd "$srcdir"/redis-3.1.4
+}
+
+dev() {
+	cd "$srcdir"/redis-3.1.4
+}
+
+doc() {
+	cd "$srcdir"/redis-3.1.4
+}
+
+package() {
+	cd "$srcdir"/redis-3.1.4
+	install -d "$pkgdir"/etc/php5/conf.d || return 1
+	make install INSTALL_ROOT="$pkgdir"/
+	echo 'extension=redis.so' > "$pkgdir"/etc/php5/conf.d/redis.ini
+	echo '# See https://github.com/phpredis/phpredis/#php-session-handler for runtime configuration' >> "$pkgdir"/etc/php5/conf.d/redis.ini
+	echo '#session.save_handler=redis' >> "$pkgdir"/etc/php5/conf.d/redis.ini
+	echo '#session.save_path = "tcp://redis.creamen.lan?' >> "$pkgdir"/etc/php5/conf.d/redis.ini
+}
+

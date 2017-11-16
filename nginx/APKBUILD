@@ -30,6 +30,7 @@ build() {
 		--error-log-path=/var/log/httpd/nginx/ \
 		--http-log-path=/var/log/httpd/nginx/ \
 		--with-http_v2_module \
+		--with-http_dav_module \
 		--add-module=../nginx-module-vts/ \
 		--with-http_ssl_module
 	make -j16
