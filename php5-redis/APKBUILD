@@ -48,6 +48,6 @@ package() {
 	echo 'extension=redis.so' > "$pkgdir"/etc/php5/conf.d/redis.ini
 	echo '# See https://github.com/phpredis/phpredis/#php-session-handler for runtime configuration' >> "$pkgdir"/etc/php5/conf.d/redis.ini
 	echo '#session.save_handler=redis' >> "$pkgdir"/etc/php5/conf.d/redis.ini
-	echo '#session.save_path = "tcp://redis.creamen.lan?' >> "$pkgdir"/etc/php5/conf.d/redis.ini
+	echo '#session.save_path = "tcp://redis.creamen.lan?"' >> "$pkgdir"/etc/php5/conf.d/redis.ini
 }
 
