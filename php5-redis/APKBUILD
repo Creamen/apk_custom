@@ -4,11 +4,11 @@ pkgname=php5-redis
 pkgver=v3.1.4
 pkgrel=1
 pkgdesc="Redis PHP5 extension"
-url="https://pecl.php.net/package/redis/
+url="https://pecl.php.net/package/redis/"
 arch="x86_64"
 license="GPLv2"
-depends="php5-zlib"
-depends_dev="php5-pear php5-dev"
+depends=""
+depends_dev="autoconf php5-dev"
 makedepends="$depends_dev"
 install=""
 subpackages=""
@@ -16,13 +16,13 @@ builddir="$srcdir/$pkgname-$pkgver"
 
 prepare() {
 	cd "$srcdir"
-	curl -L https://pecl.php.net/get/redis-3.1.4.tgz | tar -xzf -
+	curl -Ls https://pecl.php.net/get/redis-3.1.4.tgz | tar -xzf -
 	cd redis-3.1.4
 
-	phpize --clean
-	phpize
-	./configure
-	make
+	phpize5 --clean
+	phpize5
+	./configure --with-php-config=/usr/bin/php-config5
+	make -j8
 }
 
 build() {
