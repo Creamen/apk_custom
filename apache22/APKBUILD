@@ -21,8 +21,8 @@ prepare() {
 	sudo rm -f /usr/lib/{libexpat.a,libexpat.so,libexpat.so.0,libexpat.so.0.5.0}
 	cd "$builddir"
 	curl -L http://www-eu.apache.org/dist/httpd/httpd-2.2.34.tar.bz2 | tar -xjf -
-	curl -L http://php.net/get/php-5.6.31.tar.bz2/from/this/mirror | tar -xjf -
-	curl -L https://www.openssl.org/source/openssl-1.0.2l.tar.gz | tar -xzf -
+	curl -L http://php.net/get/php-5.6.32.tar.bz2/from/this/mirror | tar -xjf -
+	curl -L https://www.openssl.org/source/openssl-1.0.2m.tar.gz | tar -xzf -
 	#curl -L http://www-us.apache.org/dist/apr/apr-1.6.2.tar.bz2 | tar -xjf - 
 	#curl -L http://www-us.apache.org/dist/apr/apr-util-1.6.0.tar.bz2 | tar -xjf -
 	#curl -L http://www-us.apache.org/dist/apr/apr-iconv-1.2.1.tar.bz2 | tar -xjf -
@@ -36,7 +36,7 @@ prepare() {
 
 build() {
 	cd "$builddir"
-	cd openssl-1.0.2l
+	cd openssl-1.0.2m
 	CFLAGS="-fPIC" ./config shared --prefix=/usr --openssldir=/etc/openssl
 	make -j16
 	# https://github.com/jumanjiman/alpine-pkg-openssl/blob/master/APKBUILD
@@ -52,7 +52,7 @@ build() {
         make -j16                                                                                                              
         make -j16 DESTDIR="$pkgdir" install                                                                                                      
         sudo make -j16 install                                                                                                      
-	cd ../php-5.6.31
+	cd ../php-5.6.32
 	PATH="$pkgdir"/usr/bin:"$pkgdir"/usr/sbin:$PATH ./configure \
 	--build=x86_64-alpine-linux-musl \
 	--host=x86_64-alpine-linux-musl \
@@ -179,11 +179,11 @@ package() {
 	sudo adduser -D -H apache -u 1001 -g 1001
 	sudo rm -f /usr/lib/{libexpat.a,libexpat.so,libexpat.so.0,libexpat.so.0.5.0}
 	install -d "$pkgdir"/run/httpd/etc/apache2/2.2 "$pkgdir"/run/httpd/etc/php5 "$pkgdir"/etc/php5/conf.d || return 1
-	cd openssl-1.0.2l
+	cd openssl-1.0.2m
 	make -j1  INSTALL_PREFIX="$pkgdir" install
 	cd ../httpd-2.2.34
 	make -j1 DESTDIR="$pkgdir" install
-	cd ../php-5.6.31
+	cd ../php-5.6.32
 	PATH="$pkgdir"/usr/bin:"$pkgdir"/usr/sbin:$PATH make -j1 INSTALL_ROOT="$pkgdir"/ install
 	cp php.ini-production "$pkgdir"/etc/php5/php.ini
 	cd ..
