@@ -1,0 +1,16 @@
+git diff > patch-$(git log --format="%h" -n 1).p1
+diff --git a/screen.c b/screen.c
+index 5ab6483..c64a538 100644
+--- a/screen.c
++++ b/screen.c
+@@ -27,8 +27,8 @@
+ #define SGTTY
+ #else
+ #ifdef TCGETA
+-#define TERMIO
+-#include <termio.h>
++#define TERMIOS
++#include <termios.h>
+ #else
+ #define TERMIOS
+ #include <termios.h>
