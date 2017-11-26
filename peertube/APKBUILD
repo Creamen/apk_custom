@@ -24,7 +24,6 @@ build() {
 	cd "$builddir"
 	yarn install
 	npm run build
-	
 }
 
 check() {
@@ -42,6 +41,7 @@ doc() {
 package() {
 	cd "$builddir"
 	install -d "$pkgdir"/var/lib/peertube || return 1
-	rsync -a . --exclude .git  "$pkgdir"/var/lib/peertube || return 1
+	rsync -a . --exclude .git "$pkgdir"/var/lib/peertube || return 1
+	chown -R nobody:nobody "$pkgdir"/var/lib/peertube || return 1
 }
 
