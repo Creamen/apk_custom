@@ -8,7 +8,7 @@ url="https://github.com/Chocobozzz/PeerTube"
 arch="x86_64"
 license="GPLv2"
 depends="nodejs=v9.2.0-r1"
-depends_dev="git nodejs=v9.2.0-r1 yarn rsync"
+depends_dev="git nodejs=v9.2.0-r1 yarn rsync bash"
 makedepends="$depends_dev"
 install=""
 subpackages=""
@@ -42,6 +42,6 @@ doc() {
 package() {
 	cd "$builddir"
 	install -d "$pkgdir"/var/lib/peertube || return 1
-	rsync . --exclude .git  "$pkgdir"/var/lib/peertube || return 1 
+	rsync -a . --exclude .git  "$pkgdir"/var/lib/peertube || return 1
 }
 
