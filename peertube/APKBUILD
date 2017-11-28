@@ -24,6 +24,8 @@ build() {
 	cd "$builddir"
 	yarn install
 	npm run build
+	#_head=$(git show --pretty="format:%h" -s HEAD)
+	#pkgver=$(printf "%s-%s" ${pkgver} ${_head});
 }
 
 check() {
