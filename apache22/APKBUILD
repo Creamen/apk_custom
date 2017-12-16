@@ -2,7 +2,7 @@
 # Maintainer: BARON David <db@crea.mn>
 pkgname=apache22+php5
 pkgver=v22.56
-pkgrel=0
+pkgrel=1
 pkgdesc="Apache 2.2 / PHP 5.6"
 url="https://www.apache.org"
 arch="x86_64"
@@ -22,13 +22,10 @@ prepare() {
 	cd "$builddir"
 	curl -L http://www-eu.apache.org/dist/httpd/httpd-2.2.34.tar.bz2 | tar -xjf -
 	curl -L http://php.net/get/php-5.6.32.tar.bz2/from/this/mirror | tar -xjf -
-	curl -L https://www.openssl.org/source/openssl-1.0.2m.tar.gz | tar -xzf -
-	#curl -L http://www-us.apache.org/dist/apr/apr-1.6.2.tar.bz2 | tar -xjf - 
-	#curl -L http://www-us.apache.org/dist/apr/apr-util-1.6.0.tar.bz2 | tar -xjf -
-	#curl -L http://www-us.apache.org/dist/apr/apr-iconv-1.2.1.tar.bz2 | tar -xjf -
+	curl -L https://www.openssl.org/source/openssl-1.0.2n.tar.gz | tar -xzf -
 
 	# https://hub.docker.com/r/wodby/nginx-php-5.3-alpine/~/dockerfile/
-	sudo mkdir -p /usr/include/freetype2/freetype 
+	sudo mkdir -p /usr/include/freetype2/freetype
 	sudo cp /usr/include/tidybuffio.h /usr/include/buffio.h
 	cd -
 	cat config.layout >> "$builddir"/httpd-2.2.34/config.layout
@@ -36,22 +33,22 @@ prepare() {
 
 build() {
 	cd "$builddir"
-	cd openssl-1.0.2m
+	cd openssl-1.0.2n
 	CFLAGS="-fPIC" ./config shared --prefix=/usr --openssldir=/etc/openssl
 	make -j16
 	# https://github.com/jumanjiman/alpine-pkg-openssl/blob/master/APKBUILD
 	make -j1  INSTALL_PREFIX="$pkgdir" install
         cd ../httpd-2.2.34
-	# Pour apxs faire le un lien symoblique ???
+	# Pour apxs faire le un lien symbolique ???
         ./configure --prefix=/usr/ --with-included-apr --enable-so --enable-mods-shared=all --enable-authn-db \
                 --sysconfdir=/etc/apache2 --localstatedir=/var/log/httpd \
 		--enable-layout=Apache \
                 --enable-authn-alias --enable-authnz-ldap --enable-dbd --enable-charset-lite --enable-deflate --enable-ldap \
                 --enable-ssl --enable-dav --enable-dav-fs --enable-dav-lock --enable-vhost-alias --enable-rewrite --enable-so \
                 --enable-auth-ldap --enable-proxy --with-ldap --with-mpm=prefork --enable-log-forensic --with-ssl="$pkgdir"/usr/
-        make -j16                                                                                                              
-        make -j16 DESTDIR="$pkgdir" install                                                                                                      
-        sudo make -j16 install                                                                                                      
+        make -j16
+        make -j16 DESTDIR="$pkgdir" install
+        sudo make -j16 install
 	cd ../php-5.6.32
 	PATH="$pkgdir"/usr/bin:"$pkgdir"/usr/sbin:$PATH ./configure \
 	--build=x86_64-alpine-linux-musl \
@@ -179,7 +176,7 @@ package() {
 	sudo adduser -D -H apache -u 1001 -g 1001
 	sudo rm -f /usr/lib/{libexpat.a,libexpat.so,libexpat.so.0,libexpat.so.0.5.0}
 	install -d "$pkgdir"/run/httpd/etc/apache2/2.2 "$pkgdir"/run/httpd/etc/php5 "$pkgdir"/etc/php5/conf.d || return 1
-	cd openssl-1.0.2m
+	cd openssl-1.0.2n
 	make -j1  INSTALL_PREFIX="$pkgdir" install
 	cd ../httpd-2.2.34
 	make -j1 DESTDIR="$pkgdir" install
