@@ -1,7 +1,7 @@
 # Contributor: BARON David <db@crea.mn>
 # Maintainer: BARON David <db@crea.mn>
 pkgname=nodejs
-pkgver=v9.2.0
+pkgver=v9.2.1
 pkgrel=1
 pkgdesc="nodejs - Black hole for Internet"
 url="https://github.com/nodejs/node"
@@ -17,7 +17,7 @@ builddir="$srcdir/$pkgname-$pkgver"
 prepare() {
 	cd "$srcdir"
 	echo "Cloning ..."
-	git clone -q -b $pkgver https://github.com/nodejs/node $pkgname-$pkgver 2>/dev/null || return 1
+	git clone -q --single-branch -b $pkgver https://github.com/nodejs/node $pkgname-$pkgver 2>/dev/null || return 1
 }
 
 build() {
