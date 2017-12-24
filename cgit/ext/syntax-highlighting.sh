@@ -107,6 +107,9 @@ EXTENSION="${BASENAME##*.}"
 # map Makefile and Makefile.* to .mk
 [ "${BASENAME%%.*}" = "Makefile" ] && EXTENSION=mk
 
+# Exception for APKBUILD
+[ "${BASENAME}" = "APKBUILD" ] && EXTENSION=sh
+
 case "${EXTENSION}" in
 	'md')
 		exec php -f parseMarkdown_wrapper.php 2>/dev/null
