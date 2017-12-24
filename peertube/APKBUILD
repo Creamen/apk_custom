@@ -1,8 +1,8 @@
 # Contributor: BARON David <db@crea.mn>
 # Maintainer: BARON David <db@crea.mn>
 pkgname=peertube
-pkgver=v0.1b
-pkgrel=1
+pkgver=v0.$(git rev-parse --short HEAD)
+pkgrel=2
 pkgdesc="PeerTube - Yet Another truc muche !"
 url="https://github.com/Chocobozzz/PeerTube"
 arch="x86_64"
