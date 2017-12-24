@@ -108,7 +108,7 @@ EXTENSION="${BASENAME##*.}"
 [ "${BASENAME%%.*}" = "Makefile" ] && EXTENSION=mk
 
 # Exception for APKBUILD
-[ "${BASENAME}" = "APKBUILD" ] & EXTENSION=sh
+[ "${BASENAME}" = "APKBUILD" ] && EXTENSION=sh
 
 case "${EXTENSION}" in
 	'md')
