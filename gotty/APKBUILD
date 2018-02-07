@@ -1,0 +1,48 @@
+# Contributor: BARON David <db@crea.mn>
+# Maintainer: BARON David <db@crea.mn>
+pkgname=gotty
+pkgver=2.$(git rev-parse --short HEAD).0_alpha3
+pkgrel=1
+pkgdesc="goTTY"
+url="https://github.com/yudai/gotty"
+arch="x86_64"
+license="MIT"
+depends=""
+depends_dev="go>1.8"
+makedepends="$depends_dev"
+install=""
+subpackages=""
+GOPATH=$srcdir/go
+builddir="${GOPATH}/src/github.com/yudai/gotty"
+
+prepare() {
+	go get -u github.com/yudai/gotty
+	cd "${builddir}"
+	git remote add creamen https://git.creamen.net/gotty.git
+	git fetch --all
+	git checkout creamen/reverseproxy
+}
+
+build() {
+	cd "${builddir}"
+	go build
+}
+
+check() {
+	cd "${builddir}"
+}
+
+dev() {
+	cd "${builddir}"
+}
+
+doc() {
+	cd "${builddir}"
+}
+
+package() {
+	cd "${builddir}"
+	install -d "$pkgdir"/usr/bin || return 1
+	install gotty "$pkgdir"/usr/bin/gotty || return 1
+}
+
