@@ -1,14 +1,15 @@
 # Contributor: BARON David <db@crea.mn>
 # Maintainer: BARON David <db@crea.mn>
 pkgname=peertube
-pkgver=v0.$(git rev-parse --short HEAD)
-pkgrel=2
+pkgver=0_$(git rev-parse --short HEAD)
+pkgver=v0.2b
+pkgrel=1
 pkgdesc="PeerTube - Yet Another truc muche !"
 url="https://github.com/Chocobozzz/PeerTube"
 arch="x86_64"
 license="GPLv2"
-depends="nodejs=v9.2.1-r1 openssl"
-depends_dev="git nodejs=v9.2.1-r1 yarn rsync bash"
+depends="nodejs=v9.2.1-r1 openssl vips fftw"
+depends_dev="git nodejs=v9.2.1-r1 yarn rsync bash vips fftw"
 makedepends="$depends_dev"
 install=""
 subpackages=""
@@ -17,7 +18,9 @@ builddir="$srcdir/$pkgname-$pkgver"
 prepare() {
 	cd "$srcdir"
 	echo "Cloning ..."
-	git clone -q --single-branch -b develop https://github.com/Chocobozzz/PeerTube $pkgname-$pkgver 2>/dev/null || return 1
+	git clone -q --single-branch -b v0.0.11-alpha https://github.com/Chocobozzz/PeerTube $pkgname-$pkgver 2>/dev/null || return 1
+	# http://sharp.pixelplumbing.com/en/stable/install/#alpine-linux
+	sudo apk add vips-dev fftw-dev --update-cache --repository https://dl-3.alpinelinux.org/alpine/edge/testing/
 }
 
 build() {
