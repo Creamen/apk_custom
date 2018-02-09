@@ -23,7 +23,7 @@ build() {
 	cd "$builddir"
 	CFLAGS="-O3 -march=native"
 	./configure --prefix=/usr --sysconfdir=/etc --localstatedir=/run/proftpd/var \
-	--disable-auth-pam --enable-sendfile --enable-ctrls --enable-redis \
+	--disable-auth-pam --enable-sendfile --enable-ctrls --enable-redis --enable-nls \
 	--with-modules=\
 mod_ldap:\
 mod_quotatab:\
