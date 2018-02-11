@@ -2,7 +2,7 @@
 # Maintainer: BARON David <db@crea.mn>
 pkgname=cgit
 pkgver=v1.1
-pkgrel=666
+pkgrel=667
 pkgdesc="cgit - git frontend in C"
 url="https://git.zx2c4.com/cgit/"
 arch="x86_64"
@@ -16,7 +16,7 @@ builddir="$srcdir/$pkgname-$pkgver"
 
 prepare() {
 	cd "$srcdir"
-	git clone -b $pkgver https://git.zx2c4.com/cgit $pkgname-$pkgver || return 1
+	git clone --single-branch -b $pkgver https://git.zx2c4.com/cgit $pkgname-$pkgver || return 1
 	curl -L https://raw.githubusercontent.com/erusev/parsedown/master/Parsedown.php > ../ext/Parsedown.php
 	curl -L https://raw.githubusercontent.com/bagder/roffit/master/roffit > ../ext/roffit && chmod +x ../ext/roffit
 }
@@ -45,7 +45,7 @@ doc() {
 package() {
 	cd "$builddir"
 	install -d "$pkgdir"/run/httpd/sites/cgit/cgit-css "$pkgdir"/run/httpd/sites/cgit/users || return 1
-	strip cgit
+	install -d "$pkgdir"/run/httpd/sites/cgit/hooks || return 1
 	install cgit "$pkgdir"/run/httpd/sites/cgit || return 1
 	install cgit-doc.css cgit.css cgit.png "$pkgdir"/run/httpd/sites/cgit/cgit-css || return 1
 	install $srcdir/../ext/Parsedown.php \
@@ -53,8 +53,10 @@ package() {
 		$srcdir/../ext/favicon.ico \
 		$srcdir/../ext/owner.sh \
 		$srcdir/../ext/roffit \
+		$srcdir/../ext/fetch-all.sh \
 		$srcdir/../ext/provisioning.sh \
 		$srcdir/../ext/syntax-highlighting.sh "$pkgdir"/run/httpd/sites/cgit || return 1
 	install $srcdir/../ext/users/* "$pkgdir"/run/httpd/sites/cgit/users || return 1
+	install $srcdir/../ext/hooks/* "$pkgdir"/run/httpd/sites/cgit/hooks || return 1
 }
 

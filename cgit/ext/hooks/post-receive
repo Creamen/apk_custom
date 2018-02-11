@@ -1,0 +1,11 @@
+#!/bin/ash
+
+read -t 1 _in
+# template(name="apaPervHost_acc_githook" type="string" string="/var/log/httpd/apache/%programname%/githook.log")
+echo "post-receive[${_in}}]" | logger -t git_creamen_lan -p local2.notice
+
+prj_name=$(git config --local --get creamen.github-mirror)
+git push --mirror git@github.com:Creamen/${prj_name}.git 2>/dev/null
+
+exit 0
+
