@@ -16,9 +16,9 @@ builddir="$srcdir/$pkgname-$pkgver"
 
 prepare() {
 	cd "$srcdir"
-	git clone --single-branch -b $pkgver https://git.zx2c4.com/cgit $pkgname-$pkgver || return 1
-	curl -L https://raw.githubusercontent.com/erusev/parsedown/master/Parsedown.php > ../ext/Parsedown.php
-	curl -L https://raw.githubusercontent.com/bagder/roffit/master/roffit > ../ext/roffit && chmod +x ../ext/roffit
+	git clone -q --single-branch -b $pkgver https://git.zx2c4.com/cgit $pkgname-$pkgver || return 1
+	curl -Ls https://raw.githubusercontent.com/erusev/parsedown/master/Parsedown.php > ../ext/Parsedown.php
+	curl -Ls https://raw.githubusercontent.com/bagder/roffit/master/roffit > ../ext/roffit && chmod +x ../ext/roffit
 }
 
 build() {
