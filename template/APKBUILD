@@ -1,7 +1,7 @@
 # Contributor: BARON David <db@crea.mn>
 # Maintainer: BARON David <db@crea.mn>
 pkgname=
-pkgver=v
+pkgver=
 pkgrel=0
 pkgdesc=""
 url=""
@@ -12,23 +12,32 @@ depends_dev=""
 makedepends="$depends_dev"
 install=""
 subpackages=""
-builddir="$srcdir/$pkgname-$pkgver"
+builddir=$srcdir/
+# or 
+#builddir="$srcdir/$pkgname-$pkgver"
 
 prepare() {
+	cd "$srcdir/"
 }
 
 build() {
+	cd "$srcdir/"
 }
 
 check() {
+	cd "$srcdir/"
 }
 
 dev() {
+	cd "$srcdir/"
 }
 
 doc() {
+	cd "$srcdir/"
 }
 
 package() {
+	cd "$srcdir/"
+	# make DESTDIR="$pkgdir/" install
 }
 
