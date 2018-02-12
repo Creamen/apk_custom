@@ -1,13 +1,13 @@
 # Contributor: BARON David <db@crea.mn>
 # Maintainer: BARON David <db@crea.mn>
 pkgname=nodejs
-pkgver=v9.2.1
-pkgrel=1
-pkgdesc="nodejs - Black hole for Internet"
+pkgver=v8.9.4
+pkgrel=666
+pkgdesc="nodejs LATEST - Black hole for Internet"
 url="https://github.com/nodejs/node"
 arch="x86_64"
 license="GPLv2"
-depends="openssl zlib c-ares"
+depends=""
 depends_dev="git musl-dev libc-dev openssl-dev c-ares-dev zlib-dev linux-headers"
 makedepends="$depends_dev"
 install=""

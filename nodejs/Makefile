@@ -1,2 +1,3 @@
 all:
-	abuild -r
+	APKBUILD=APKBUILD-LTS abuild -r
+	APKBUILD=APKBUILD-LATEST abuild -r
