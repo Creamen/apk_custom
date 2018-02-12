@@ -1,0 +1,52 @@
+# Contributor: BARON David <db@crea.mn>
+# Maintainer: BARON David <db@crea.mn>
+pkgname=mdoc-ml+cgi
+pkgver=1.14.1
+pkgrel=666
+pkgdesc="mdoc-ml aka mandoc with man.cgi build"
+url="http://mdocml.bsd.lv/"
+arch="x86_64"
+license="BSD"
+depends=""
+depends_dev="zlib-dev"
+makedepends="$depends_dev"
+install=""
+subpackages=""
+builddir=$srcdir/
+# or 
+#builddir="$srcdir/$pkgname-$pkgver"
+
+prepare() {
+	cd "$srcdir/"
+	curl -Ls http://mdocml.bsd.lv/snapshots/mandoc-1.14.3.tar.gz | tar -xzf -
+	cd mandoc-*
+	cp cgi.h.example cgi.h
+	patch -p0 < $srcdir/../cgi.h.p0
+	cp $srcdir/../configure.local .
+        ./configure
+	make -j16
+}
+
+build() {
+	cd "$srcdir/"
+}
+
+check() {
+	cd "$srcdir/"
+}
+
+dev() {
+	cd "$srcdir/"
+}
+
+doc() {
+	cd "$srcdir/"
+}
+
+package() {
+	cd "$srcdir/"
+	cd mandoc-*
+	make DESTDIR="$pkgdir/" install
+	find "$pkgdir/usr/man" -type f | xargs gzip -9
+}
+

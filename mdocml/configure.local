@@ -1,0 +1,62 @@
+AVE_WCHAR=1
+UTF8_LOCALE=en_US.UTF-8
+
+OSNAME="Alpine 3.7"
+
+PREFIX="/usr"
+BINDIR="${PREFIX}/bin"
+SBINDIR="${PREFIX}/sbin"
+MANDIR="${PREFIX}/man"
+INCLUDEDIR="${PREFIX}/include/mandoc"                            
+LIBDIR="${PREFIX}/lib/mandoc"                                    
+HOMEBREWDIR="${PREFIX}/Cellar"
+
+
+BIN_FROM_SBIN="../bin"
+
+MANM_MANCONF="mandoc.conf"      # default is "man.conf"
+
+MANM_MAN="mandoc_man"           # default is "man"
+MANM_MDOC="mandoc_mdoc"         # default is "mdoc"
+MANM_ROFF="mandoc_roff"         # default is "roff"
+MANM_EQN="mandoc_eqn"           # default is "eqn"
+MANM_TBL="mandoc_tbl"           # default is "tbl"
+
+BINM_MAN=mman                   # default is "man"
+BINM_APROPOS=mapropos           # default is "apropos"
+BINM_WHATIS=mwhatis             # default is "whatis"
+BINM_MAKEWHATIS=mandocdb        # default is "makewhatis"
+BINM_SOELIM=msoelim             # default is "soelim"
+
+LN="ln -sf"                     # default is "ln -f"
+
+CFLAGS="-W -Wall -Wstrict-prototypes -Wno-unused-parameter -Wwrite-strings"
+CFLAGS="${CFLAGS} -I/usr/local/include -march=native -O3"
+
+LD_OHASH="-lutil"
+LD_NANOSLEEP="-lrt"
+#LD_RECVMSG="-lsocket"
+LDADD="-lm"
+
+LDFLAGS="-Wl,-z,relro"
+
+INSTALL="install"
+INSTALL_PROGRAM="${INSTALL} -m 0555"
+INSTALL_LIB="${INSTALL} -m 0444"
+INSTALL_MAN="${INSTALL} -m 0444"
+INSTALL_DATA="${INSTALL} -m 0444"
+
+INSTALL_LIBMANDOC=1
+
+BUILD_CGI=1
+
+STATIC="-static -pthread"
+
+WWWPREFIX="/var/www/mandoc"
+HTDOCDIR="${WWWPREFIX}/htdocs"
+CGIBINDIR="${WWWPREFIX}/cgi-bin"
+
+BUILD_CATMAN=0
+
+CC=gcc
+

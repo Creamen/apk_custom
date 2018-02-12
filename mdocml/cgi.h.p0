@@ -1,0 +1,10 @@
+--- cgi.h.example
++++ cgi.h
+@@ -2,6 +2,6 @@
+ 
+ #define	SCRIPT_NAME "cgi-bin/man.cgi"
+ #define	MAN_DIR "/man"
+-#define	CSS_DIR ""
++#define	CSS_DIR "/css"
+ #define	CUSTOMIZE_TITLE "Manual pages with mandoc"
+ #define	COMPAT_OLDURI Yes
