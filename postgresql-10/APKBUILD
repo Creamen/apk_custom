@@ -24,7 +24,6 @@ build() {
 	export CFLAGS="-O3 -march=native"
 	export CPPFLAGS="-O3 -march=native"
 
-	ash
 	./configure                                                	\
 		--prefix=/usr						\
 		--with-libedit-preferred				\
