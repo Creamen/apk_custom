@@ -1,8 +1,8 @@
 # Contributor: BARON David <db@crea.mn>
 # Maintainer: BARON David <db@crea.mn>
 pkgname=postgresql
-pkgver=v9.6.7
-pkgrel=0
+pkgver=9.6.7
+pkgrel=666
 pkgdesc="PostgreSQL"
 url="https://www.postgresql.org"
 arch="x86_64"
@@ -16,18 +16,13 @@ builddir="$srcdir/$pkgname-$pkgver"
 
 prepare() {
 	cd "$srcdir"
-	git clone --single-branch -b REL9_6_7 https://git.postgresql.org/git/postgresql.git $pkgname-$pkgver
+	curl -Ls https://ftp.postgresql.org/pub/source/v9.6.7/postgresql-9.6.7.tar.bz2 | tar -xjf -
 }
 
 build() {
 	cd "$builddir"
-	git_hash="$(git log -1 --pretty='%h')"
-	git_branch="$(git branch --list 'REL*' | grep '*' | grep -oE '[^ ]+' | tail -1)"
 	export CFLAGS="-O3 -march=native"
 	export CPPFLAGS="-O3 -march=native"
-	# https://git.alpinelinux.org/cgit/aports/tree/main/postgresql/APKBUILD
-	#		--with-extra-version="-${git_branch}-${git_hash}"       \
-
 	./configure                                                	\
 		--prefix=/usr						\
 		--with-libedit-preferred				\
