@@ -1,0 +1,47 @@
+# Contributor: BARON David <db@crea.mn>
+# Maintainer: BARON David <db@crea.mn>
+pkgname=sqlite_fdw
+pkgver=0.10
+pkgrel=666
+pkgdesc="SQLite Foreign Data Wrapper for PostgresQL 10.2"
+url="https://github.com/gleu/sqlite_fdw"
+arch="x86_64"
+license="PostgreSQL"
+depends="postgresql=10.2-r666"
+depends_dev="sqlite-dev postgresql=10.2-r666"
+makedepends="$depends_dev"
+install=""
+subpackages=""
+builddir=$srcdir/
+# or 
+#builddir="$srcdir/$pkgname-$pkgver"
+
+prepare() {
+	cd "$srcdir/"
+	git clone --single-branch -b master https://github.com/gleu/sqlite_fdw
+}
+
+build() {
+	cd "$srcdir/"
+	cd sqlite_fdw
+	make USE_PGXS=1
+}
+
+check() {
+	cd "$srcdir/"
+}
+
+dev() {
+	cd "$srcdir/"
+}
+
+doc() {
+	cd "$srcdir/"
+}
+
+package() {
+	cd "$srcdir/"
+	cd sqlite_fdw
+	make DESTDIR="$pkgdir/" install
+}
+
