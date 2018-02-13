@@ -1,0 +1,62 @@
+# Contributor: BARON David <db@crea.mn>
+# Maintainer: BARON David <db@crea.mn>
+pkgname=postgresql-gotty
+pkgver=10.9.6
+_v96=9.6.7
+_v10=10.2
+pkgrel=666
+pkgdesc="PostgreSQL 9 / 10 for goTTY"
+url="https://www.postgresql.org"
+arch="x86_64"
+license="PostgreSQL"
+depends="tzdata"
+depends_dev="libressl-dev openldap-dev libxml2-dev libxslt-dev readline-dev icu-dev util-linux-dev libedit-dev zlib-dev bison flex libintl"
+makedepends="$depends_dev"
+install=""
+subpackages=""
+builddir="$srcdir/postgresql"
+
+prepare() {
+	cd "$srcdir"
+	for v in ${_v96} ${_v10}; do
+		curl -Ls https://ftp.postgresql.org/pub/source/v$v/postgresql-$v.tar.bz2 | tar -xjf -
+	done
+}
+
+build() {
+	for v in ${_v96} ${_v10}; do
+		cd "$builddir-$v"
+		export CFLAGS="-O3 -march=native"
+		export CPPFLAGS="-O3 -march=native"
+		./configure                                                	\
+			--prefix=/usr/postgresql-$v				\
+			--with-libedit-preferred				\
+			--with-system-tzdata=/usr/share/zoneinfo		\
+			--with-ldap                                             \
+			--with-openssl                                          \
+			--with-uuid=e2fs                                        \
+			--with-libxml                                           \
+			--with-libxslt                                          
+
+		make -j16
+	done
+}
+
+check() {
+	cd "$srcdir"
+}
+
+dev() {
+	cd "$srcdir"
+}
+
+doc() {
+	cd "$srcdir"
+}
+
+package() {
+	for v in ${_v96} ${_v10}; do
+		cd "$builddir-$v"
+		make DESTDIR="$pkgdir" install 
+	done
+}
