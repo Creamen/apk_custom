@@ -2,12 +2,12 @@
 # Maintainer: BARON David <db@crea.mn>
 pkgname=postgresql
 pkgver=9.6.7
-pkgrel=666
+pkgrel=6666
 pkgdesc="PostgreSQL"
 url="https://www.postgresql.org"
 arch="x86_64"
 license="PostgreSQL"
-depends="tzdata perl"
+depends="tzdata"
 depends_dev="libressl-dev openldap-dev libxml2-dev libxslt-dev readline-dev icu-dev util-linux-dev libedit-dev zlib-dev bison flex libintl"
 makedepends="$depends_dev"
 install=""
@@ -24,7 +24,7 @@ build() {
 	export CFLAGS="-O3 -march=native"
 	export CPPFLAGS="-O3 -march=native"
 	./configure                                                	\
-		--prefix=/usr						\
+		--prefix=/usr/postgresql-${pkgver}			\
 		--with-libedit-preferred				\
 		--with-system-tzdata=/usr/share/zoneinfo		\
 		--with-ldap                                             \
