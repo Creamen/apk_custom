@@ -1,0 +1,44 @@
+# Contributor: BARON David <db@crea.mn>
+# Maintainer: BARON David <db@crea.mn>
+pkgname=openssl
+pkgver=1.0.2n
+pkgrel=666
+pkgdesc="OpenSSL"
+url="https://www.openssl.org"
+arch="x86_64"
+license="OpenSSL"
+depends=""
+depends_dev="linux-headers"
+makedepends="$depends_dev"
+install=""
+subpackages=""
+builddir="$srcdir/openssl-1.0.2n"
+
+prepare() {
+	cd "$srcdir/"
+	curl -Ls https://www.openssl.org/source/openssl-1.0.2n.tar.gz | tar -xzf -
+}
+
+build() {
+	cd "$builddir/"
+	./config no-async --prefix=/usr
+	make -j16
+}
+
+check() {
+	cd "$srcdir/"
+}
+
+dev() {
+	cd "$srcdir/"
+}
+
+doc() {
+	cd "$srcdir/"
+}
+
+package() {
+	cd "$builddir/"
+        make INSTALL_PREFIX="$pkgdir/" install_sw
+}
+

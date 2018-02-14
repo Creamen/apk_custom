@@ -1,0 +1,4 @@
+all:
+	APKBUILD=APKBUILD-111 abuild -r
+	APKBUILD=APKBUILD-110 abuild -r
+	APKBUILD=APKBUILD-102 abuild -r
