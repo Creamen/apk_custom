@@ -13,8 +13,6 @@ makedepends="libressl-dev zlib-dev curl-dev expat-dev gettext-dev pcre2-dev"
 install=""
 subpackages=""
 builddir=$srcdir/$pkgname
-# or 
-#builddir="$srcdir/$pkgname-$pkgver"
 
 prepare() {
 	cd "$srcdir/"
@@ -23,8 +21,7 @@ prepare() {
 
 build() {
 	cd "$builddir/"
-#	make NO_REGEX=NeedsStartEnd -j16
-	make prefix=/usr DESTDIR="$pkgdir/" NO_GETTEXT=YesPlease NO_SVN_TESTS=YesPlease NO_REGEX=NeedsStartEnd USE_LIBPCRE2=YesPlease NO_NSEC=YesPlease NO_SYS_POLL_H=1 CFLAGS="-O3 -march=native" -j16
+	make -j16 prefix=/usr DESTDIR="$pkgdir/" NO_GETTEXT=YesPlease NO_SVN_TESTS=YesPlease NO_REGEX=NeedsStartEnd USE_LIBPCRE2=YesPlease NO_NSEC=YesPlease NO_SYS_POLL_H=1 CFLAGS="-O3 -march=native" 
 }
 
 check() {
