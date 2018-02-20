@@ -2,22 +2,24 @@
 # Maintainer: BARON David <db@crea.mn>
 pkgname=cgit
 pkgver=v1.1
-pkgrel=667
+pkgrel=668
 pkgdesc="cgit - git frontend in C"
 url="https://git.zx2c4.com/cgit/"
 arch="x86_64"
 license="GPLv2"
 depends="highlight lua git perl"
-depends_dev="gettext-dev libressl-dev zlib-dev git libintl perl"
-makedepends="$depends_dev"
+depends_dev=""
+makedepends="gettext-dev libressl-dev zlib-dev git libintl perl"
 install=""
 subpackages=""
 builddir="$srcdir/$pkgname-$pkgver"
 
 prepare() {
 	cd "$srcdir"
-	git clone -q --single-branch -b $pkgver https://git.zx2c4.com/cgit $pkgname-$pkgver || return 1
+#	git clone -q --single-branch -b $pkgver https://git.zx2c4.com/cgit $pkgname-$pkgver || return 1
+	git clone -q --single-branch -b master  https://git.zx2c4.com/cgit $pkgname-$pkgver || return 1
 	curl -Ls https://raw.githubusercontent.com/erusev/parsedown/master/Parsedown.php > ../ext/Parsedown.php
+	curl -Ls https://raw.githubusercontent.com/erusev/parsedown-extra/master/ParsedownExtra.php > ../ext/ParsedownExtra.php
 	curl -Ls https://raw.githubusercontent.com/bagder/roffit/master/roffit > ../ext/roffit && chmod +x ../ext/roffit
 }
 
@@ -49,12 +51,16 @@ package() {
 	install cgit "$pkgdir"/run/httpd/sites/cgit || return 1
 	install cgit-doc.css cgit.css cgit.png "$pkgdir"/run/httpd/sites/cgit/cgit-css || return 1
 	install $srcdir/../ext/Parsedown.php \
+		$srcdir/../ext/ParsedownExtra.php \
 		$srcdir/../ext/parseMarkdown_wrapper.php \
 		$srcdir/../ext/favicon.ico \
 		$srcdir/../ext/owner.sh \
 		$srcdir/../ext/roffit \
 		$srcdir/../ext/fetch-all.sh \
 		$srcdir/../ext/provisioning.sh \
+		$srcdir/../ext/about.sh \
+		$srcdir/../ext/helpers/man2html.sh \
+		$srcdir/../ext/helpers/txt2html.sh \
 		$srcdir/../ext/syntax-highlighting.sh "$pkgdir"/run/httpd/sites/cgit || return 1
 	install $srcdir/../ext/users/* "$pkgdir"/run/httpd/sites/cgit/users || return 1
 	install $srcdir/../ext/hooks/* "$pkgdir"/run/httpd/sites/cgit/hooks || return 1

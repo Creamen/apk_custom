@@ -1,0 +1,92 @@
+#
+# cgit config
+# Details here : https://linux.die.net/man/5/cgitrc
+#
+
+css=/cgit-css/cgit.css
+logo=/cgit-css/cgit.png
+
+# if you do not want that webcrawler (like google) index your site
+robots=noindex, nofollow
+
+# if cgit messes up links, use a virtual-root. For example has cgit.example.org/ this value:
+virtual-root=/
+
+root-title=Creamen .NET git Repo
+root-readme=/run/httpd/sites/cgit/README.html
+root-desc=Original and non original projects
+
+cache-size=0
+max-stats=year
+side-by-side-diffs=0
+snapshots=tar.gz tar.bz2 tar.xz
+source-filter=/run/httpd/sites/cgit/syntax-highlighting.sh
+owner-filter=/run/httpd/sites/cgit/owner.sh
+
+# -- 20180217
+favicon=/cgit-css/cgit.png
+logo-link=https://git.creamen.net
+noplainemail=1
+#remove-suffix=1
+enable-blame=1
+enable-commit-graph=1
+enable-follow-links=1
+enable-git-config=1
+enable-gitweb-owner=1
+enable-html-serving=1
+enable-http-clone=1
+enable-index-links=1
+enable-index-owner=1
+enable-log-filecount=1
+enable-log-linecount=1
+enable-remote-branches=1
+enable-subject-links=1
+enable-tree-linenumbers=1
+
+section=creamen
+section-from-path=2
+enable-filter-overrides=1
+cache-root=/run/httpd/sites/cgit-cache/
+case-sensitive-sort=0
+
+mimetype.gif=image/gif
+mimetype.html=text/html
+mimetype.jpg=image/jpeg
+mimetype.jpeg=image/jpeg
+mimetype.pdf=application/pdf
+mimetype.png=image/png
+mimetype.svg=image/svg+xml
+
+readme=:README.md
+readme=:readme.md
+readme=:README.mkd
+readme=:readme.mkd
+readme=:README.rst
+readme=:readme.rst
+readme=:README.html
+readme=:readme.html
+readme=:README.htm
+readme=:readme.htm
+readme=:README.txt
+readme=:readme.txt
+readme=:README
+readme=:readme
+readme=:INSTALL.md
+readme=:install.md
+readme=:INSTALL.mkd
+readme=:install.mkd
+readme=:INSTALL.rst
+readme=:install.rst
+readme=:INSTALL.html
+readme=:install.html
+readme=:INSTALL.htm
+readme=:install.htm
+readme=:INSTALL.txt
+readme=:install.txt
+readme=:INSTALL
+readme=:install
+# -- 20180217
+
+scan-path=/run/httpd/sites/creamen.net/wwwdata/git/repo/
+clone-url=https://$HTTP_HOST$SCRIPT_NAME/$CGIT_REPO_URL
+
