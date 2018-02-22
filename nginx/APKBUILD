@@ -1,38 +1,54 @@
 # Contributor: BARON David <db@crea.mn>
 # Maintainer: BARON David <db@crea.mn>
 # http://nginx.org/download
-pkgname=_nginx
-pkgver=1.13.5
+pkgname=nginx
+pkgver=1.13.9
 pkgrel=1
-pkgdesc="Nginx last version and its Prometheus Exporter"
+pkgdesc="ngiNX last version"
 url="http://www.nginx.org"
 arch="x86_64"
 license="GPLv2"
 depends=""
-depends_dev="git libressl-dev pcre-dev zlib-dev"
-makedepends="$depends_dev"
+depends_dev=""
+makedepends="git libressl-dev pcre-dev zlib-dev libxml2-dev libxml2-dev \
+libxslt-dev musl-dev linux-headers pcre2-dev"
 install=""
 subpackages=""
 builddir="$srcdir/nginx-$pkgver"
 
 prepare() {
 	cd "$srcdir"
-	git clone -q -b v0.1.15 https://github.com/vozlt/nginx-module-vts.git
-	curl -Ls http://nginx.org/download/nginx-1.13.5.tar.gz | tar -xzf -
+	curl -Ls http://nginx.org/download/nginx-${pkgver}.tar.gz | tar -xzf -
+	git clone --single-branch -b 0.1.15 https://github.com/nginx/njs.git
 }
 
 build() {
 	cd "$builddir"
 	./configure \
-		--prefix=/usr \
-		--conf-path=/etc/nginx/nginx.conf \
-		--pid-path=/var/run/ \
-		--error-log-path=/var/log/httpd/nginx/ \
-		--http-log-path=/var/log/httpd/nginx/ \
-		--with-http_v2_module \
-		--with-http_dav_module \
-		--add-module=../nginx-module-vts/ \
-		--with-http_ssl_module
+		--prefix=/usr					\
+		--conf-path=/etc/nginx/nginx.conf		\
+		--pid-path=/var/run/				\
+		--error-log-path=/var/log/httpd/nginx/		\
+		--http-log-path=/var/log/httpd/nginx/		\
+		--http-client-body-temp-path=/run/nginx/body	\
+		--http-proxy-temp-path=/run/nginx/proxy		\
+		--user=http                                     \
+		--group=http                                    \
+		--with-pcre-jit                                 \
+		--with-http_v2_module                           \
+		--with-http_stub_status_module                  \
+		--with-http_realip_module                       \
+		--with-http_addition_module                     \
+		--with-http_dav_module                          \
+		--with-http_gzip_static_module                  \
+		--with-http_sub_module                          \
+		--with-http_xslt_module                         \
+		--with-file-aio                                 \
+		--with-threads                                  \
+		--with-http_ssl_module                          \
+		--with-ld-opt=-lrt                              \
+		--add-module=../njs/nginx
+
 	make -j16
 }
 
