@@ -1,23 +1,23 @@
 # Contributor: BARON David <db@crea.mn>
 # Maintainer: BARON David <db@crea.mn>
 pkgname=php7-geoip
-pkgver=v1.1.1
+pkgver=1.1.1
 pkgrel=0
 pkgdesc="GeoIP PHP extension"
 url="https://pecl.php.net/package/geoip"
 arch="x86_64"
 license="GPLv2"
 depends="php7-zlib geoip"
-depends_dev="php7-pear php7-dev geoip-dev"
-makedepends="$depends_dev"
+depends_dev=""
+makedepends="php7-pear php7-dev geoip-dev"
 install=""
 subpackages=""
 builddir="$srcdir/$pkgname-$pkgver"
 
 prepare() {
 	cd "$srcdir"
-	curl -L https://pecl.php.net/get/geoip-1.1.1.tgz | tar -xzf -
-	cd geoip-1.1.1
+	curl -L https://pecl.php.net/get/geoip-${pkgver}.tgz | tar -xzf -
+	cd geoip-${pkgver}
 
 	phpize --clean
 	phpize
@@ -26,23 +26,23 @@ prepare() {
 }
 
 build() {
-	cd "$srcdir"/geoip-1.1.1
+	cd "$srcdir"/geoip-${pkgver}
 }
 
 check() {
-	cd "$srcdir"/geoip-1.1.1
+	cd "$srcdir"/geoip-${pkgver}
 }
 
 dev() {
-	cd "$srcdir"/geoip-1.1.1
+	cd "$srcdir"/geoip-${pkgver}
 }
 
 doc() {
-	cd "$srcdir"/geoip-1.1.1
+	cd "$srcdir"/geoip-${pkgver}
 }
 
 package() {
-	cd "$srcdir"/geoip-1.1.1
+	cd "$srcdir"/geoip-${pkgver}
 	install -d "$pkgdir"/etc/php7/conf.d || return 1
 	make install INSTALL_ROOT="$pkgdir"/
 	echo 'extension=geoip.so' > "$pkgdir"/etc/php7/conf.d/geoip.ini

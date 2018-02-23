@@ -1,7 +1,7 @@
 # Contributor: BARON David <db@crea.mn>
 # Maintainer: BARON David <db@crea.mn>
 pkgname=php5-redis
-pkgver=v3.1.4
+pkgver=3.1.6
 pkgrel=1
 pkgdesc="Redis PHP5 extension"
 url="https://pecl.php.net/package/redis/"
@@ -16,33 +16,33 @@ builddir="$srcdir/$pkgname-$pkgver"
 
 prepare() {
 	cd "$srcdir"
-	curl -Ls https://pecl.php.net/get/redis-3.1.4.tgz | tar -xzf -
-	cd redis-3.1.4
+	curl -Ls https://pecl.php.net/get/redis-${pkgver}.tgz | tar -xzf -
+	cd redis-${pkgver}
 
 	phpize5 --clean
 	phpize5
 	./configure --with-php-config=/usr/bin/php-config5
-	make -j8
+	make -j16
 }
 
 build() {
-	cd "$srcdir"/redis-3.1.4
+	cd "$srcdir"/redis-${pkgver}
 }
 
 check() {
-	cd "$srcdir"/redis-3.1.4
+	cd "$srcdir"/redis-${pkgver}
 }
 
 dev() {
-	cd "$srcdir"/redis-3.1.4
+	cd "$srcdir"/redis-${pkgver}
 }
 
 doc() {
-	cd "$srcdir"/redis-3.1.4
+	cd "$srcdir"/redis-${pkgver}
 }
 
 package() {
-	cd "$srcdir"/redis-3.1.4
+	cd "$srcdir"/redis-${pkgver}
 	install -d "$pkgdir"/etc/php5/conf.d || return 1
 	make install INSTALL_ROOT="$pkgdir"/
 	echo 'extension=redis.so' > "$pkgdir"/etc/php5/conf.d/redis.ini
