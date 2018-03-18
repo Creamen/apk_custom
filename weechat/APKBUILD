@@ -1,7 +1,7 @@
 # Contributor: BARON David <db@crea.mn>
 # Maintainer: BARON David <db@crea.mn>
 pkgname=weechat
-pkgver=2.0.1
+pkgver=2.1
 pkgrel=666
 pkgdesc="WeeChat - The extensible chat client"
 url="https://weechat.org/"
