@@ -1,7 +1,7 @@
 # Contributor: BARON David <db@crea.mn>
 # Maintainer: BARON David <db@crea.mn>
 pkgname=nodejs
-pkgver=v9.5.0
+pkgver=v9.8.0
 pkgrel=666
 pkgdesc="nodejs LATEST - Black hole for Internet"
 url="https://github.com/nodejs/node"
