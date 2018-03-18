@@ -2,7 +2,7 @@
 # Maintainer: BARON David <db@crea.mn>
 pkgname=openssl
 pkgver=1.1.0g
-pkgrel=666
+pkgrel=667
 pkgdesc="OpenSSL"
 url="https://www.openssl.org"
 arch="x86_64"
@@ -12,15 +12,16 @@ depends_dev="linux-headers"
 makedepends="$depends_dev gettext-dev"
 install=""
 subpackages=""
-builddir="$srcdir/openssl-1.1.0g"
+builddir="$srcdir/openssl-${pkgver}"
 
 prepare() {
 	cd "$srcdir/"
-	curl -Ls https://www.openssl.org/source/openssl-1.1.0g.tar.gz | tar -xzf -
+	curl -Ls https://www.openssl.org/source/openssl-${pkgver}.tar.gz | tar -xzf -
 }
 
 build() {
 	cd "$builddir/"
+	export CFLAGS="-O3 -march=native"
 	./config no-async --prefix=/usr
 	make -j16
 }
