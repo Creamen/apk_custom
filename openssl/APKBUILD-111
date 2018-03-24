@@ -1,9 +1,9 @@
 # Contributor: BARON David <db@crea.mn>
 # Maintainer: BARON David <db@crea.mn>
 pkgname=openssl
-pkgver=1.1.1_pre2
-br_ver=1.1.1-pre2
-pkgrel=667
+pkgver=1.1.1_pre3
+br_ver=1.1.1-pre3
+pkgrel=666
 pkgdesc="OpenSSL"
 url="https://www.openssl.org"
 arch="x86_64"
