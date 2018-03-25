@@ -2,11 +2,11 @@
 # Maintainer: BARON David <db@crea.mn>
 
 _ver_major=4
-_ver_minor=18.0
+_ver_minor=18.2
 _pkgfullname="courier-imap-$_ver_major.$_ver_minor"
 
 pkgname=courier-imap
-pkgver=v4.18.0
+pkgver=v4.18.2
 pkgrel=1
 pkgdesc="Courier IMAP"
 url="http://www.courier-mta.org/"
@@ -29,6 +29,8 @@ prepare() {
 build() {
 	cd "$builddir"
 	cd $_pkgfullname
+	export CFLAGS="-O3 -march=native"
+	export CPPFLAGS="-O3 -march=native"
 	./configure --prefix=/usr --with-waitfunc=wait3
 	make -j16
 	cd libs/tcpd

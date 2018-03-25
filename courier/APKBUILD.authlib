@@ -29,6 +29,8 @@ prepare() {
 build() {
 	cd "$builddir"
 	cd $_pkgfullname
+	export CFLAGS="-O3 -march=native"
+	export CPPFLAGS="-O3 -march=native"
 	./configure --prefix=/usr --without-authpam --without-authmysql --without-authpgsql --without-authsqlite --without-authpwd --without-authshadow --without-authuserdb --with-authldap
 	make -j16
 }
