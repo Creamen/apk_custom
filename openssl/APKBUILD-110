@@ -8,8 +8,8 @@ url="https://www.openssl.org"
 arch="x86_64"
 license="OpenSSL"
 depends=""
-depends_dev="linux-headers"
-makedepends="$depends_dev gettext-dev"
+depends_dev=""
+makedepends="$depends_dev  zlib-dev linux-headers"
 install=""
 subpackages=""
 builddir="$srcdir/openssl-${pkgver}"
@@ -22,7 +22,7 @@ prepare() {
 build() {
 	cd "$builddir/"
 	export CFLAGS="-O3 -march=native"
-	./config no-async --prefix=/usr
+	./config no-async --prefix=/usr shared zlib threads
 	make -j16
 }
 
@@ -40,6 +40,6 @@ doc() {
 
 package() {
 	cd "$builddir/"
-	make DESTDIR="$pkgdir/" install_sw install_ssldirs
+	make DESTDIR="$pkgdir/" install_sw install_ssldirs install_dev
 }
 
