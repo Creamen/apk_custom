@@ -1,7 +1,7 @@
 # Contributor: BARON David <db@crea.mn>
 # Maintainer: BARON David <db@crea.mn>
 pkgname=git
-pkgver=2.16.2
+pkgver=2.16.3
 pkgrel=666
 pkgdesc="git"
 url="https://github.com/git/git"
