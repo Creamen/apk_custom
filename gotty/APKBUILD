@@ -1,7 +1,8 @@
 # Contributor: BARON David <db@crea.mn>
 # Maintainer: BARON David <db@crea.mn>
 pkgname=gotty
-pkgver=2.$(git rev-parse --short HEAD).0_alpha3
+#pkgver=2.$(git rev-parse --short HEAD).0_alpha3
+pkgver=2.0.0_alpha3
 pkgrel=1
 pkgdesc="goTTY"
 url="https://github.com/yudai/gotty"
@@ -19,8 +20,8 @@ prepare() {
 	go get -u github.com/yudai/gotty
 	cd "${builddir}"
 	git remote add creamen https://git.creamen.net/gotty.git
-	git fetch --all
-	git checkout creamen/reverseproxy
+	git fetch --all -q
+	git checkout -q creamen/reverseproxy
 }
 
 build() {
