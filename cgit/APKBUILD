@@ -2,7 +2,7 @@
 # Maintainer: BARON David <db@crea.mn>
 pkgname=cgit
 pkgver=1.1
-pkgrel=668
+pkgrel=669
 pkgdesc="cgit - git frontend in C"
 url="https://git.zx2c4.com/cgit/"
 arch="x86_64"
