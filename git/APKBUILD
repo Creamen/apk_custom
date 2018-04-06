@@ -1,7 +1,7 @@
 # Contributor: BARON David <db@crea.mn>
 # Maintainer: BARON David <db@crea.mn>
 pkgname=git
-pkgver=2.16.3
+pkgver=2.17.0
 pkgrel=666
 pkgdesc="git"
 url="https://github.com/git/git"
@@ -12,11 +12,11 @@ depends_dev=""
 makedepends="libressl-dev zlib-dev curl-dev expat-dev gettext-dev pcre2-dev"
 install=""
 subpackages=""
-builddir=$srcdir/$pkgname
+builddir=$srcdir/$pkgname-${pkgver}
 
 prepare() {
 	cd "$srcdir/"
-	git clone -q --single-branch -b v${pkgver} https://github.com/git/git
+	curl -Ls https://github.com/git/git/archive/v${pkgver}.tar.gz | tar -xzf -
 }
 
 build() {
@@ -39,6 +39,6 @@ doc() {
 package() {
 	cd "$builddir/"
 	make prefix=/usr DESTDIR="$pkgdir/" NO_GETTEXT=YesPlease NO_SVN_TESTS=YesPlease NO_REGEX=NeedsStartEnd USE_LIBPCRE2=YesPlease NO_NSEC=YesPlease NO_SYS_POLL_H=1 CFLAGS="-O3 -march=native" install
-	find $pkgdir/usr/share/man/ -type f | xargs gzip -9
+	#find $pkgdir/usr/share/man/ -type f | xargs gzip -9
 }
 
