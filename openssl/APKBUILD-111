@@ -1,8 +1,8 @@
 # Contributor: BARON David <db@crea.mn>
 # Maintainer: BARON David <db@crea.mn>
 pkgname=openssl
-pkgver=1.1.1_pre5
-br_ver=1.1.1-pre5
+pkgver=1.1.1_pre6
+br_ver=1.1.1-pre6
 pkgrel=666
 pkgdesc="OpenSSL"
 url="https://www.openssl.org"
@@ -22,7 +22,7 @@ prepare() {
 
 build() {
 	cd "$builddir/"
-	export CFLAGS="-O3 -march=native"
+	#export CFLAGS="-O3 -march=native"
 	export CFLAGS="-O3"
 	./config no-async --prefix=/usr shared zlib threads
 	make -j16
