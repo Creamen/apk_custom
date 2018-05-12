@@ -2,8 +2,8 @@
 # Maintainer: BARON David <db@crea.mn>
 pkgname=postgresql-gotty
 pkgver=10.9.6
-_v96=9.6.8
-_v10=10.3
+_v96=9.6.9
+_v10=10.4
 pkgrel=667
 pkgdesc="PostgreSQL 9 / 10 for goTTY"
 url="https://www.postgresql.org"
