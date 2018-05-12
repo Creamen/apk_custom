@@ -4,13 +4,14 @@ pkgname=postgresql-gotty
 pkgver=10.9.6
 _v96=9.6.9
 _v10=10.4
+_v11=11.$(date '+%Y%m%d')
 pkgrel=667
-pkgdesc="PostgreSQL 9 / 10 for goTTY"
+pkgdesc="PostgreSQL 9 / 10 / v11-master for goTTY"
 url="https://www.postgresql.org"
 arch="x86_64"
 license="PostgreSQL"
 depends="tzdata"
-depends_dev="libressl-dev openldap-dev libxml2-dev libxslt-dev readline-dev icu-dev util-linux-dev libedit-dev zlib-dev bison flex libintl"
+depends_dev="libressl-dev openldap-dev libxml2-dev libxslt-dev readline-dev icu-dev util-linux-dev libedit-dev zlib-dev bison flex libintl llvm5-dev clang"
 makedepends="$depends_dev"
 install=""
 subpackages=""
@@ -21,10 +22,11 @@ prepare() {
 	for v in ${_v96} ${_v10}; do
 		curl -Ls https://ftp.postgresql.org/pub/source/v$v/postgresql-$v.tar.bz2 | tar -xjf -
 	done
+	git clone --single-branch -b master https://git.postgresql.org/git/postgresql.git postgresql-${_v11}
 }
 
 build() {
-	for v in ${_v96} ${_v10}; do
+	for v in ${_v96} ${_v10} ${_v11}; do
 		cd "$builddir-$v"
 		export CFLAGS="-O3 -march=native"
 		export CPPFLAGS="-O3 -march=native"
@@ -36,7 +38,11 @@ build() {
 			--with-openssl                                          \
 			--with-uuid=e2fs                                        \
 			--with-libxml                                           \
-			--with-libxslt                                          
+			--with-libxslt                                          \
+			--with-llvm
+
+		# Ugly hack to force header generation
+		make -C src/backend/ generated-headers
 
 		make -j16
 	done
