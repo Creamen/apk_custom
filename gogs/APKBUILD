@@ -1,0 +1,51 @@
+# Contributor: BARON David <db@crea.mn>
+# Maintainer: BARON David <db@crea.mn>
+pkgname=gogs
+pkgver=0.11.43
+pkgrel=1
+pkgdesc="gogs"
+url="https://github.com/gogs/gogs"
+arch="x86_64"
+license="MIT"
+depends=""
+depends_dev="go>1.8 rsync"
+makedepends="$depends_dev"
+install=""
+subpackages=""
+GOPATH=$srcdir/go
+builddir="${GOPATH}/src/github.com/gogs/gogs"
+
+# Inspiration or copycat style - it's up to you :
+# https://gogs.io/docs/installation/install_from_source.html
+
+prepare() {
+	go get -u -v github.com/gogs/gogs
+}
+
+build() {
+	cd "${builddir}"
+	go build -tags "sqlite cert"
+}
+
+check() {
+	cd "${builddir}"
+}
+
+dev() {
+	cd "${builddir}"
+}
+
+doc() {
+	cd "${builddir}"
+}
+
+package() {
+	cd "${builddir}"
+	install -d "$pkgdir"/usr/share/gogs || return 1
+	install -s gogs "$pkgdir"/usr/share/gogs || return 1
+	rsync -r templates "$pkgdir"/usr/share/gogs/
+	rsync -r public    "$pkgdir"/usr/share/gogs/
+	rsync -r scripts   "$pkgdir"/usr/share/gogs/
+	rsync -r conf      "$pkgdir"/usr/share/gogs/
+}
+
