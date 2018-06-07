@@ -2,13 +2,13 @@
 # Maintainer: BARON David <db@crea.mn>
 pkgname=redis_fdw
 pkgver=0.9.6
-pkgrel=667
+pkgrel=668
 pkgdesc="Redis Foreign Data Wrapper for PostgresQL 9.6"
 url="https://github.com/pg-redis-fdw/redis_fdw"
 arch="x86_64"
 license="PostgreSQL"
-depends="postgresql=9.6.8-r666"
-depends_dev="hiredis-dev postgresql=9.6.8-r666"
+depends="postgresql=9.6.9-r666"
+depends_dev="hiredis-dev postgresql=9.6.9-r666"
 makedepends="$depends_dev"
 install=""
 subpackages=""
