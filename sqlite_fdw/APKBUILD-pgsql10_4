@@ -1,14 +1,14 @@
 # Contributor: BARON David <db@crea.mn>
 # Maintainer: BARON David <db@crea.mn>
 pkgname=sqlite_fdw
-pkgver=0.10.3
+pkgver=0.10.4
 pkgrel=666
-pkgdesc="SQLite Foreign Data Wrapper for PostgresQL 10.3"
+pkgdesc="SQLite Foreign Data Wrapper for PostgresQL 10.4"
 url="https://github.com/gleu/sqlite_fdw"
 arch="x86_64"
 license="PostgreSQL"
-depends="postgresql=10.3-r666"
-depends_dev="sqlite-dev postgresql=10.3-r666"
+depends="postgresql=10.4-r666"
+depends_dev="sqlite-dev postgresql=10.4-r666"
 makedepends="$depends_dev"
 install=""
 subpackages=""
