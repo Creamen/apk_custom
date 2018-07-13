@@ -1,0 +1,45 @@
+# Contributor: BARON David <db@crea.mn>
+# Maintainer: BARON David <db@crea.mn>
+pkgname=brotli
+pkgver=1.0.5
+pkgrel=666
+pkgdesc="brotli - Efficient compression tool"
+url="https://github.com/google/brotli/releases"
+arch="x86_64"
+license="MIT"
+depends=""
+depends_dev=""
+makedepends="git cmake bash"
+install=""
+subpackages=""
+builddir="$srcdir/$pkgname-v$pkgver"
+
+prepare() {
+	cd "$srcdir"
+	git clone -q --single-branch -b v${pkgver} https://github.com/google/brotli $pkgname-v$pkgver || return 1
+}
+
+build() {
+	cd "$builddir"
+	mkdir build && cd build
+	cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr ..
+	make -j8
+}
+
+check() {
+	cd "$builddir"
+}
+
+dev() {
+	cd "$builddir"
+}
+
+doc() {
+	cd "$builddir"
+}
+
+package() {
+	cd "$builddir"
+	cd build
+	make DESTDIR="$pkgdir/" install
+}
