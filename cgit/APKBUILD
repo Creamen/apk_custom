@@ -1,7 +1,7 @@
 # Contributor: BARON David <db@crea.mn>
 # Maintainer: BARON David <db@crea.mn>
 pkgname=cgit
-pkgver=1.1
+pkgver=1.2
 pkgrel=670
 pkgdesc="cgit - git frontend in C"
 url="https://git.zx2c4.com/cgit/"
@@ -16,8 +16,8 @@ builddir="$srcdir/$pkgname-v$pkgver"
 
 prepare() {
 	cd "$srcdir"
-#	git clone -q --single-branch -b v$pkgver https://git.zx2c4.com/cgit $pkgname-v$pkgver || return 1
-	git clone -q --single-branch -b ch/for-jason  https://git.zx2c4.com/cgit $pkgname-v$pkgver || return 1
+	git clone -q --single-branch -b v$pkgver https://git.zx2c4.com/cgit $pkgname-v$pkgver || return 1
+#	git clone -q --single-branch -b ch/for-jason  https://git.zx2c4.com/cgit $pkgname-v$pkgver || return 1
 	curl -Ls https://raw.githubusercontent.com/erusev/parsedown/master/Parsedown.php > ../ext/Parsedown.php
 	curl -Ls https://raw.githubusercontent.com/erusev/parsedown-extra/master/ParsedownExtra.php > ../ext/ParsedownExtra.php
 	curl -Ls https://raw.githubusercontent.com/bagder/roffit/master/roffit > ../ext/roffit && chmod +x ../ext/roffit
