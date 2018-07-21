@@ -23,11 +23,14 @@ prepare() {
 		curl -Ls https://ftp.postgresql.org/pub/source/v$v/postgresql-$v.tar.bz2 | tar -xjf -
 	done
 	git clone --single-branch -b master https://git.postgresql.org/git/postgresql.git postgresql-${_v11}
+	cd ../patches
+	ln -sf patch_disable_exec_shell_master.p0 patch_disable_exec_shell_${_v11}.p0
 }
 
 build() {
 	for v in ${_v96} ${_v10} ${_v11}; do
 		cd "$builddir-$v"
+		patch -p0 < ../../patches/patch_disable_exec_shell_$v.p0
 		export CFLAGS="-O3 -march=native"
 		export CPPFLAGS="-O3 -march=native"
 		./configure                                                	\
