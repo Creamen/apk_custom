@@ -1,0 +1,45 @@
+# Contributor: BARON David <db@crea.mn>
+# Maintainer: BARON David <db@crea.mn>
+pkgname=lazygit
+pkgver=0.1
+pkgrel=1
+pkgdesc="A simple terminal UI for git commands, written in Go with the gocui library."
+url="https://github.com/jesseduffield/lazygit"
+arch="x86_64"
+license="MIT"
+depends=""
+depends_dev=""
+makedepends="$depends_dev"
+install=""
+subpackages=""
+builddir=$srcdir/
+# or 
+#builddir="$srcdir/$pkgname-$pkgver"
+
+prepare() {
+	cd "$srcdir/"
+}
+
+build() {
+	export GOPATH="$srcdir"
+	go get -u -v github.com/jesseduffield/lazygit
+}
+
+check() {
+	cd "$srcdir/"
+}
+
+dev() {
+	cd "$srcdir/"
+}
+
+doc() {
+	cd "$srcdir/"
+}
+
+package() {
+	cd "$srcdir/"
+	install -d "$pkgdir"/bin
+	install "$srcdir"/bin/lazygit "$pkgdir"/bin
+}
+
