@@ -1,0 +1,81 @@
+# Contributor: BARON David <db@crea.mn>
+# Maintainer: BARON David <db@crea.mn>
+# http://nginx.org/download
+pkgname=nginx+brotli
+pkgver=1.15.2
+pkgrel=1
+pkgdesc="ngiNX last version with Brotli compression - Build with -O3 and -flto flags"
+url="http://www.nginx.org"
+arch="x86_64"
+license="GPLv2"
+depends=""
+depends_dev=""
+makedepends="git libressl-dev pcre-dev zlib-dev \
+musl-dev linux-headers pcre2-dev"
+install=""
+subpackages=""
+builddir="$srcdir/nginx+brotli-$pkgver"
+
+prepare() {
+	cd "$srcdir"
+	curl -Ls http://nginx.org/download/nginx-${pkgver}.tar.gz | tar -xzf -
+	mv nginx-${pkgver} nginx+brotli-${pkgver}
+	git clone --recurse-submodules --single-branch -b master https://github.com/vozlt/nginx-module-vts
+	git clone --recurse-submodules --single-branch -b master https://github.com/google/ngx_brotli
+}
+
+build() {
+	#export CFLAGS="-O3 -march=native -flto -DTCP_FASTOPEN=23 -fstack-protector-strong"
+	#export CPPFLAGS="-O3 -march=native -flto -DTCP_FASTOPEN=23 -fstack-protector-strong"
+
+	export CFLAGS="-O3 -flto -DTCP_FASTOPEN=23 -fstack-protector-strong"
+	cd "$builddir"
+	./configure \
+	    --http-client-body-temp-path=/etc/nginx/body      		\
+	    --http-fastcgi-temp-path=/etc/nginx/fastcgi       		\
+	    --http-proxy-temp-path=/etc/nginx/proxy           		\
+	    --http-scgi-temp-path=/etc/nginx/scgi             		\
+	    --http-uwsgi-temp-path=/etc/nginx/uwsgi           		\
+	    --user=http                                                 \
+	    --group=http                                                \
+	    --prefix=/usr                                      		\
+	    --sbin-path=/usr/sbin/nginx                           	\
+	    --conf-path=/etc/nginx/nginx.conf                           \
+	    --with-http_v2_module                                       \
+	    --with-http_stub_status_module                              \
+	    --with-http_realip_module                                   \
+	    --with-http_addition_module                                 \
+	    --with-http_dav_module                                      \
+	    --with-http_gzip_static_module                              \
+	    --with-http_sub_module                                      \
+	    --with-file-aio                                             \
+	    --with-threads                                              \
+	    --with-http_ssl_module                                      \
+	    --with-ld-opt=-lrt                                          \
+	    --pid-path=/var/run/nginx.pid                               \
+	    --error-log-path=/var/log/nginx/error.log            	\
+	    --http-log-path=/var/log/nginx/access.log             	\
+	    --add-module=../nginx-module-vts				\
+	    --add-module=../ngx_brotli					\
+	    --with-openssl-opt="no-ssl no-tls1" 
+
+	make -j16
+}
+
+check() {
+	cd "$builddir"
+}
+
+dev() {
+	cd "$builddir"
+}
+
+doc() {
+	cd "$builddir"
+}
+
+package() {
+	cd "$builddir"
+	DESTDIR=$pkgdir/ make install
+}
+

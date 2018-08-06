@@ -1,2 +1,3 @@
 all:
-	abuild -r
+	abuild -r				# Classic
+	APKBUILD=APKBUILD-brotli abuild -r	# Brotli included
