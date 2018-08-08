@@ -1,7 +1,7 @@
 # Contributor: BARON David <db@crea.mn>
 # Maintainer: BARON David <db@crea.mn>
 pkgname=cgit
-pkgver=1.2
+pkgver=1.2.1
 pkgrel=670
 pkgdesc="cgit - git frontend in C"
 url="https://git.zx2c4.com/cgit/"
@@ -49,7 +49,7 @@ package() {
 	install -d "$pkgdir"/run/httpd/sites/cgit/cgit-css "$pkgdir"/run/httpd/sites/cgit/users || return 1
 	install -d "$pkgdir"/run/httpd/sites/cgit/hooks || return 1
 	install cgit "$pkgdir"/run/httpd/sites/cgit || return 1
-	install cgit-doc.css cgit.css cgit.png "$pkgdir"/run/httpd/sites/cgit/cgit-css || return 1
+	install cgit.css cgit.png "$pkgdir"/run/httpd/sites/cgit/cgit-css || return 1
 	install $srcdir/../ext/Parsedown.php \
 		$srcdir/../ext/ParsedownExtra.php \
 		$srcdir/../ext/parseMarkdown_wrapper.php \
