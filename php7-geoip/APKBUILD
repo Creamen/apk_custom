@@ -2,7 +2,7 @@
 # Maintainer: BARON David <db@crea.mn>
 pkgname=php7-geoip
 pkgver=1.1.1
-pkgrel=0
+pkgrel=1
 pkgdesc="GeoIP PHP extension"
 url="https://pecl.php.net/package/geoip"
 arch="x86_64"
