@@ -15,6 +15,7 @@ install=""
 subpackages=""
 GOPATH=$srcdir/go
 builddir="${GOPATH}/src/github.com/yudai/gotty"
+options="!strip"
 
 prepare() {
 	go get -u github.com/yudai/gotty
@@ -45,5 +46,6 @@ package() {
 	cd "${builddir}"
 	install -d "$pkgdir"/usr/bin || return 1
 	install gotty "$pkgdir"/usr/bin/gotty || return 1
+	upx -9 "$pkgdir"/usr/bin/gotty 
 }
 
