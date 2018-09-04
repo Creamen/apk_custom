@@ -2,7 +2,7 @@
 # Maintainer: BARON David <db@crea.mn>
 pkgname=cgit
 pkgver=1.2.1
-pkgrel=670
+pkgrel=666
 pkgdesc="cgit - git frontend in C"
 url="https://git.zx2c4.com/cgit/"
 arch="x86_64"
@@ -13,6 +13,7 @@ makedepends="gettext-dev libressl-dev zlib-dev git libintl perl"
 install=""
 subpackages=""
 builddir="$srcdir/$pkgname-v$pkgver"
+options="!strip"
 
 prepare() {
 	cd "$srcdir"
@@ -64,5 +65,7 @@ package() {
 		$srcdir/../ext/syntax-highlighting.sh "$pkgdir"/run/httpd/sites/cgit || return 1
 	install $srcdir/../ext/users/* "$pkgdir"/run/httpd/sites/cgit/users || return 1
 	install $srcdir/../ext/hooks/* "$pkgdir"/run/httpd/sites/cgit/hooks || return 1
+	
+	( find $pkgdir -perm +1 -type f | xargs -n1 -P8 upx -9 ) && return 0 || return 0
 }
 
