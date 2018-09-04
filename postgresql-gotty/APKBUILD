@@ -16,6 +16,7 @@ makedepends="$depends_dev"
 install=""
 subpackages=""
 builddir="$srcdir/postgresql"
+options="!strip"
 
 prepare() {
 	cd "$srcdir"
@@ -68,5 +69,6 @@ package() {
 		cd "$builddir-$v"
 		make DESTDIR="$pkgdir" install 
 	done
-	find $pkgdir -perm +1 -type f | xargs -n4 -P8 upx -9
+	# Strip failed because upx remove a lot of info
+	( find $pkgdir -perm +1 -type f | xargs -n1 -P8 upx -9 ) && return 0 || return 0
 }
