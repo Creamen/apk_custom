@@ -1,0 +1,46 @@
+# Contributor: BARON David <db@crea.mn>
+# Maintainer: BARON David <db@crea.mn>
+pkgname=doh-proxy
+pkgver=0.1.10
+pkgrel=1
+pkgdesc="A DNS-over-HTTP server proxy "
+url="https://github.com/jedisct1/rust-doh"
+arch="x86_64"
+license="MIT"
+depends=""
+depends_dev="cargo"
+makedepends="$depends_dev"
+install=""
+subpackages=""
+builddir="$srcdir/$pkgname-$pkgver"
+options="!strip"
+
+prepare() {
+	cd "$srcdir/"
+	git clone -b ${pkgver} https://github.com/jedisct1/rust-doh ${pkgname}-${pkgver}
+}
+
+build() {
+	cd "$builddir/"
+	cargo  build --release
+}
+
+check() {
+	cd "$srcdir/"
+}
+
+dev() {
+	cd "$srcdir/"
+}
+
+doc() {
+	cd "$srcdir/"
+}
+
+package() {
+	cd "$builddir/"
+	upx -9 target/release/doh-proxy
+	install -d "$pkgdir"/usr/bin
+	install target/release/doh-proxy "$pkgdir"/usr/bin/doh-proxy || return 1
+}
+
