@@ -13,6 +13,7 @@ makedepends="$depends_dev"
 install=""
 subpackages=""
 builddir="$srcdir/$pkgname-$pkgver"
+options="!strip"
 
 prepare() {
 	cd "$srcdir"
@@ -21,8 +22,8 @@ prepare() {
 
 build() {
 	cd "$builddir"
-	export CFLAGS="-O3 -march=native"
-	export CPPFLAGS="-O3 -march=native"
+	export CFLAGS="-O3"
+	export CPPFLAGS="-O3"
 	./configure                                                	\
 		--prefix=/usr						\
 		--with-libedit-preferred				\
@@ -51,5 +52,6 @@ doc() {
 package() {
 	cd "$builddir"
 	make DESTDIR="$pkgdir" install 
+	find $pkgdir -type f -perm +100 -exec upx -9 {} \;
 }
 
