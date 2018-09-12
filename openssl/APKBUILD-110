@@ -21,7 +21,7 @@ prepare() {
 
 build() {
 	cd "$builddir/"
-	export CFLAGS="-O3 -march=native"
+	export CFLAGS="-O3"
 	./config no-async --prefix=/usr shared zlib threads
 	make -j16
 }
