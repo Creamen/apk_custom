@@ -1,8 +1,8 @@
 # Contributor: BARON David <db@crea.mn>
 # Maintainer: BARON David <db@crea.mn>
 pkgname=redis
-pkgver=4.0.11
-pkgrel=666
+pkgver=5.0
+pkgrel=4
 pkgdesc="Redis"
 url="https://redis.io"
 arch="x86_64"
@@ -12,11 +12,11 @@ depends_dev="linux-headers"
 makedepends="$depends_dev"
 install=""
 subpackages=""
-builddir="$srcdir/$pkgname-$pkgver"
+builddir="$srcdir/$pkgname-$pkgver-rc${pkgrel}"
 
 prepare() {
 	cd "$srcdir/"
-	curl -Ls http://download.redis.io/releases/redis-${pkgver}.tar.gz | tar -xzf -
+	curl -Ls http://download.redis.io/releases/redis-${pkgver}-rc${pkgrel}.tar.gz | tar -xzf -
 }
 
 build() {
