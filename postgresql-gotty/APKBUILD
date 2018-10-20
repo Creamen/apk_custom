@@ -4,9 +4,9 @@ pkgname=postgresql-gotty
 pkgver=10.9.6
 _v96=9.6.10
 _v10=10.5
-_v11=11.$(date '+%Y%m%d')
+_v11=11.0
 pkgrel=668
-pkgdesc="PostgreSQL 9 / 10 / v11-master for goTTY"
+pkgdesc="PostgreSQL 9.6 / 10 / 11 for goTTY"
 url="https://www.postgresql.org"
 arch="x86_64"
 license="PostgreSQL"
@@ -20,12 +20,12 @@ options="!strip"
 
 prepare() {
 	cd "$srcdir"
-	for v in ${_v96} ${_v10}; do
+	for v in ${_v96} ${_v10} ${_v11}; do
 		curl -Ls https://ftp.postgresql.org/pub/source/v$v/postgresql-$v.tar.bz2 | tar -xjf -
 	done
-	git clone --single-branch -b master https://git.postgresql.org/git/postgresql.git postgresql-${_v11}
-	cd ../patches
-	ln -sf patch_disable_exec_shell_master.p0 patch_disable_exec_shell_${_v11}.p0
+#	git clone --single-branch -b master https://git.postgresql.org/git/postgresql.git postgresql-${_v11}
+#	cd ../patches
+#	ln -sf patch_disable_exec_shell_master.p0 patch_disable_exec_shell_${_v11}.p0
 }
 
 build() {
