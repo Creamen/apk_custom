@@ -1,0 +1,12 @@
+--- src/bin/psql/command.c.orig
++++ src/bin/psql/command.c
+@@ -4210,6 +4210,9 @@
+ {
+ 	int			result;
+ 
++	psql_error("\\!: failed\n");
++	return false;
++
+ 	if (!command)
+ 	{
+ 		char	   *sys;
