@@ -6,8 +6,8 @@ pkgrel=7
 pkgdesc="Apache 2.2 / PHP 5.6 + OpenSSL 1.0.2"
 
 apache_ver=2.2.34
-php_ver=5.6.37
-openssl_ver=1.0.2p
+php_ver=5.6.38
+openssl_ver=1.0.2q
 
 url="https://www.apache.org"
 arch="x86_64"
@@ -106,7 +106,7 @@ build() {
 	--with-libxml-dir=/usr \
 	--enable-mbstring=shared \
 	--with-mcrypt=shared \
-	'--with-mysqli=shared,mysqlnd' \
+	--with-mysqli=shared,mysqlnd \
 	--with-mysql-sock=/run/mysqld/mysqld.sock \
 	--enable-mysqlnd=shared \
 	--enable-opcache=shared \
@@ -117,7 +117,7 @@ build() {
 	--with-pdo-dblib=shared \
 	'--with-pdo-mysql=shared,mysqlnd' \
 	'--with-pdo-odbc=shared,unixODBC,/usr' \
-	--with-pdo-pgsql=shared \
+	-with-pdo-pgsql=shared \
 	'--with-pdo-sqlite=shared,/usr' \
 	--with-pgsql=shared \
 	--enable-phar=shared \
