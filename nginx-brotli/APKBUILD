@@ -20,10 +20,16 @@ prepare() {
 	cd "$srcdir/"
 	mkdir deps
 	cd deps
-	curl -Ls ftp://ftp.openssl.org/source/openssl-1.1.1.tar.gz | tar -xzf -
+	echo "[DL] OpenSSL ...";
+	curl -Ls ftp://ftp.openssl.org/source/openssl-1.1.1a.tar.gz | tar -xzf -
+	echo "[CLONE] nginx-module-vts ...";
 	git clone -q --recurse-submodules --single-branch -b master https://github.com/vozlt/nginx-module-vts 
+	echo "[CLONE] ngx_brotli ...";
 	git clone -q --recurse-submodules --single-branch -b master https://github.com/google/ngx_brotli
+	echo "[CLONE] nginx-upload-module ...";
+	git clone -q --recurse-submodules --single-branch -b 2.3.0 https://github.com/fdintino/nginx-upload-module
 	cd ..
+	echo "[DL] NGinx 1.15.5 ...";
 	curl -Ls http://nginx.org/download/nginx-1.15.5.tar.gz | tar -xzf -
 	ln -s nginx-1.15.5 nginx-brotli-1.15.5
 }
@@ -61,10 +67,11 @@ build() {
 	    --pid-path=/var/run/nginx.pid                               \
 	    --error-log-path=/var/log/nginx/error.log                   \
 	    --http-log-path=/var/log/nginx/access.log                   \
-	    --with-openssl=../deps/openssl-1.1.1/                       \
+	    --with-openssl=../deps/openssl-1.1.1a/                      \
 	    --with-openssl-opt="no-ssl no-tls1"                         \
 	    --add-module=../deps/nginx-module-vts                       \
 	    --add-module=../deps/ngx_brotli                             \
+	    --add-module=../deps/nginx-upload-module			\
 	    --with-cc-opt="${CFLAGS}"
 
 	make -j16
