@@ -2,8 +2,8 @@
 # Maintainer: BARON David <db@crea.mn>
 pkgname=redis
 pkgver=5.0.2
-pkgrel=666
-pkgdesc="Redis"
+pkgrel=666-gcc-lto
+pkgdesc="Redis LTO"
 url="https://redis.io"
 arch="x86_64"
 license="BSD"
@@ -21,11 +21,7 @@ prepare() {
 
 build() {
 	cd "$builddir/"
-	CC=gcc
-	CPP=g++
-	unset REDIS_CFLAGS
-	unset REDIS_LDFLAGS
-	make CFLAGS="-Ofast" PREFIX=/usr -j16 V=1
+	make CC=clang CPP=clang++ CFLAGS="-Ofast" LDFLAGS="-flto -Ofast" PREFIX=/usr -j16 V=1
 }
 
 check() {
