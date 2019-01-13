@@ -1,0 +1,53 @@
+# Contributor: BARON David <db@crea.mn>
+# Maintainer: BARON David <db@crea.mn>
+pkgname=pg_prometheus
+pkgver=0.2.1
+pkgrel=0
+pkgdesc="pg_prometheus"
+url="https://github.com/timescale/pg_prometheus"
+arch="x86_64"
+license="MIT"
+depends=""
+depends_dev="postgresql~=9.6.11 bash cmake"
+makedepends="$depends_dev"
+install=""
+subpackages=""
+#builddir=$srcdir/
+# or 
+builddir="$srcdir/$pkgname-$pkgver"
+
+prepare() {
+	cd "$srcdir/"
+	git clone --single-branch -b master https://github.com/timescale/pg_prometheus ${pkgname}-${pkgver}
+	curl -Ls https://github.com/timescale/timescaledb/releases/download/1.1.1/timescaledb-1.1.1.tar.gz | tar -xzf -
+}
+
+build() {
+	cd "$srcdir/timescaledb"
+	./bootstrap
+	cd build
+	make -j16
+
+	cd "$builddir/"
+	make
+}
+
+check() {
+	cd "$srcdir/"
+}
+
+dev() {
+	cd "$srcdir/"
+}
+
+doc() {
+	cd "$srcdir/"
+}
+
+package() {
+	cd "$srcdir/timescaledb/build"
+	make DESTDIR="$pkgdir/" install
+	cd "$builddir/"
+	make DESTDIR="$pkgdir/" install
+}
+
