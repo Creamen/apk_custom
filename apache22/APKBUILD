@@ -6,7 +6,7 @@ pkgrel=7
 pkgdesc="Apache 2.2 / PHP 5.6 + OpenSSL 1.0.2"
 
 apache_ver=2.2.34
-php_ver=5.6.38
+php_ver=5.6.40
 openssl_ver=1.0.2q
 
 url="https://www.apache.org"
