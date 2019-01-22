@@ -1,7 +1,7 @@
 # Contributor: BARON David <db@crea.mn>
 # Maintainer: BARON David <db@crea.mn>
 pkgname=nginx-brotli
-pkgver=1.15.5
+pkgver=1.15.8
 pkgrel=0
 pkgdesc="nginx with brotli and TLS1.3"
 url="http://nginx.org/en/download.html"
@@ -29,9 +29,9 @@ prepare() {
 	echo "[CLONE] nginx-upload-module ...";
 	git clone -q --recurse-submodules --single-branch -b 2.3.0 https://github.com/fdintino/nginx-upload-module
 	cd ..
-	echo "[DL] NGinx 1.15.5 ...";
-	curl -Ls http://nginx.org/download/nginx-1.15.5.tar.gz | tar -xzf -
-	ln -s nginx-1.15.5 nginx-brotli-1.15.5
+	echo "[DL] NGinx ${pkgver} ...";
+	curl -Ls http://nginx.org/download/nginx-${pkgver}.tar.gz | tar -xzf -
+	ln -s nginx-${pkgver} nginx-brotli-${pkgver}
 }
 
 build() {
