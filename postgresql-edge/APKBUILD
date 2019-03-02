@@ -1,14 +1,14 @@
 # Contributor: BARON David <db@crea.mn>
 # Maintainer: BARON David <db@crea.mn>
 pkgname=postgresql
-pkgver=11.0_git$(date '+%Y%m%d')
+pkgver=12.0_git$(date '+%Y%m%d')
 pkgrel=0
 pkgdesc="PostgreSQL"
 url="https://www.postgresql.org"
 arch="x86_64"
 license="PostgreSQL"
 depends="tzdata perl"
-depends_dev="libressl-dev openldap-dev libxml2-dev libxslt-dev readline-dev icu-dev util-linux-dev libedit-dev zlib-dev bison flex libintl llvm5-dev clang"
+depends_dev="libressl-dev openldap-dev libxml2-dev libxslt-dev readline-dev icu-dev util-linux-dev libedit-dev zlib-dev bison flex libintl llvm5-dev clang-dev linux-headers util-linux-dev"
 makedepends="$depends_dev"
 install=""
 subpackages=""
