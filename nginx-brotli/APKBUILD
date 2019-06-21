@@ -1,8 +1,9 @@
 # Contributor: BARON David <db@crea.mn>
 # Maintainer: BARON David <db@crea.mn>
 pkgname=nginx-brotli
-pkgver=1.15.8
+pkgver=1.17.0
 pkgrel=0
+ssl=1.1.1c
 pkgdesc="nginx with brotli and TLS1.3"
 url="http://nginx.org/en/download.html"
 arch="x86_64"
@@ -21,7 +22,7 @@ prepare() {
 	mkdir deps
 	cd deps
 	echo "[DL] OpenSSL ...";
-	curl -Ls ftp://ftp.openssl.org/source/openssl-1.1.1a.tar.gz | tar -xzf -
+	curl -Ls ftp://ftp.openssl.org/source/openssl-${ssl}.tar.gz | tar -xzf -
 	echo "[CLONE] nginx-module-vts ...";
 	git clone -q --recurse-submodules --single-branch -b master https://github.com/vozlt/nginx-module-vts 
 	echo "[CLONE] ngx_brotli ...";
@@ -52,6 +53,8 @@ build() {
 	    --sbin-path=/usr/sbin/nginx                                 \
 	    --conf-path=/etc/nginx/nginx.conf                           \
 	    --with-pcre-jit                                             \
+	    --with-stream						\
+	    --with-stream_ssl_module					\
 	    --with-http_v2_module                                       \
 	    --with-http_stub_status_module                              \
 	    --with-http_realip_module                                   \
@@ -67,7 +70,7 @@ build() {
 	    --pid-path=/var/run/nginx.pid                               \
 	    --error-log-path=/var/log/nginx/error.log                   \
 	    --http-log-path=/var/log/nginx/access.log                   \
-	    --with-openssl=../deps/openssl-1.1.1a/                      \
+	    --with-openssl=../deps/openssl-${ssl}/                      \
 	    --with-openssl-opt="no-ssl no-tls1"                         \
 	    --add-module=../deps/nginx-module-vts                       \
 	    --add-module=../deps/ngx_brotli                             \
