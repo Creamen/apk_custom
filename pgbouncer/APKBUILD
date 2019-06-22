@@ -17,12 +17,15 @@ subpackages=""
 builddir="$srcdir/$pkgname-$pkgver"
 
 prepare() {
+	cp *.p1 "$srcdir/"
 	cd "$srcdir/"
-	curl -sL https://github.com/pgbouncer/pgbouncer/releases/download/pgbouncer_1_9_0/pgbouncer-1.9.0.tar.gz | tar -xzf -
+	curl -sL https://github.com/pgbouncer/pgbouncer/releases/download/pgbouncer_1_9_0/pgbouncer-${pkgver}.tar.gz | tar -xzf -
 }
 
 build() {
 	cd "$builddir/"
+	patch -p1 < ../const_free.p1
+	export CFLAGS="-O3 -flto"
 	./configure --prefix=/usr
 	make -j8
 }
