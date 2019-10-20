@@ -1,14 +1,14 @@
 # Contributor: BARON David <db@crea.mn>
 # Maintainer: BARON David <db@crea.mn>
 pkgname=postgresql
-pkgver=9.5.19
+pkgver=12.0
 pkgrel=666
 pkgdesc="PostgreSQL"
 url="https://www.postgresql.org"
 arch="x86_64"
 license="PostgreSQL"
 depends="tzdata perl libldap libressl libedit libxml2 libxslt"
-depends_dev="libressl-dev openldap-dev libxml2-dev libxslt-dev readline-dev icu-dev util-linux-dev libedit-dev zlib-dev bison flex libintl"
+depends_dev="libressl-dev openldap-dev libxml2-dev libxslt-dev readline-dev icu-dev util-linux-dev libedit-dev zlib-dev bison flex libintl llvm8-dev clang-dev"
 makedepends="$depends_dev"
 install=""
 subpackages=""
@@ -22,20 +22,25 @@ prepare() {
 
 build() {
 	cd "$builddir"
-	export CFLAGS="-O3"
-	export CPPFLAGS="-O3"
+# -fstack-clash-protection
+# -fcf-protection
+	export CFLAGS="-O3 -pipe -Wall -Werror=format-security -Wp,-D_FORTIFY_SOURCE=2 -Wp,-D_GLIBCXX_ASSERTIONS -fexceptions -fstack-protector-strong -grecord-gcc-switches -m64 -mtune=generic -fasynchronous-unwind-tables"
+	export CPPFLAGS="-O3 -pipe -Wall -Werror=format-security -Wp,-D_FORTIFY_SOURCE=2 -Wp,-D_GLIBCXX_ASSERTIONS -fexceptions -fstack-protector-strong -grecord-gcc-switches -m64 -mtune=generic -fasynchronous-unwind-tables"
+	export LLVM_CONFIG=/usr/lib/llvm8/bin/llvm-config
+
 	./configure                                                	\
 		--prefix=/usr						\
 		--with-libedit-preferred				\
 		--with-system-tzdata=/usr/share/zoneinfo		\
 		--with-ldap                                             \
+		--with-llvm                                             \
 		--with-openssl                                          \
 		--with-uuid=e2fs                                        \
 		--with-libxml                                           \
 		--with-libxslt                                          
 
-	make -j16
-	make -C contrib -j16
+	make -C src/backend/ generated-headers
+	make -j16 world
 }
 
 check() {
@@ -52,7 +57,9 @@ doc() {
 
 package() {
 	cd "$builddir"
-	make DESTDIR="$pkgdir" install 
-	make DESTDIR="$pkgdir" -C contrib install 
+	make DESTDIR="$pkgdir" install install-world
+	find "$pkgdir/usr/share/man/" -type f | xargs gzip -9
+	# XXX - Slony fail to build wih that active.
+#	find $pkgdir -type f -perm +100 -exec upx -9 {} \;
 }
 
