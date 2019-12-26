@@ -1,7 +1,7 @@
 # Contributor: BARON David <db@crea.mn>
 # Maintainer: BARON David <db@crea.mn>
 pkgname="libtorrent"
-pkgver=0.13.7
+pkgver=0.13.8
 pkgrel=666
 pkgdesc="libtorrent"
 url="https://rtorrent.net"

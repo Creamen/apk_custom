@@ -1,7 +1,7 @@
 # Contributor: BARON David <db@crea.mn>
 # Maintainer: BARON David <db@crea.mn>
 pkgname="rtorrent"
-pkgver=0.9.7
+pkgver=0.9.8
 pkgrel=666
 pkgdesc="rTorrent"
 url="https://rtorrent.net"
