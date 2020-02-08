@@ -2,7 +2,7 @@
 # Maintainer: BARON David <db@crea.mn>
 # https://hub.docker.com/r/combro2k/alpine-virtualmail/~/dockerfile/
 pkgname=cyrus-sasl-ldap
-pkgver=2.1.26
+pkgver=2.1.27
 pkgrel=0
 pkgdesc="Cyrus-SASL authdaemon with LDAP support"
 url="https://www.cyrusimap.org/sasl/index.html"
@@ -17,7 +17,7 @@ builddir="$srcdir/cyrus-sasl-${pkgver}"
 
 prepare() {
 	cd "$srcdir"
-	curl -Ls ftp://ftp.cyrusimap.org/cyrus-sasl/cyrus-sasl-${pkgver}.tar.gz | tar -xzf -
+	curl -L ftp://ftp.cyrusimap.org/cyrus-sasl/cyrus-sasl-${pkgver}.tar.gz | tar -xzf -
 }
 
 build() {
