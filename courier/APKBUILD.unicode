@@ -2,11 +2,11 @@
 # Maintainer: BARON David <db@crea.mn>
 
 _ver_major=2
-_ver_minor=0
+_ver_minor=1
 _pkgfullname="courier-unicode-$_ver_major.$_ver_minor"
 
 pkgname=courier-unicode
-pkgver=v2.0
+pkgver=v2.1
 pkgrel=0
 pkgdesc="Courier IMAP"
 url="http://www.courier-mta.org/"

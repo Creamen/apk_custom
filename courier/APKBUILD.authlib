@@ -2,11 +2,11 @@
 # Maintainer: BARON David <db@crea.mn>
 
 _ver_major=0
-_ver_minor=68.0
+_ver_minor=69.0
 _pkgfullname="courier-authlib-$_ver_major.$_ver_minor"
 
 pkgname=courier-authlib
-pkgver=v0.68.0
+pkgver=v0.69.0
 pkgrel=0
 pkgdesc="Courier IMAP"
 url="http://www.courier-mta.org/"
