@@ -17,11 +17,13 @@ builddir="$srcdir/cyrus-sasl-${pkgver}"
 
 prepare() {
 	cd "$srcdir"
-	curl -L ftp://ftp.cyrusimap.org/cyrus-sasl/cyrus-sasl-${pkgver}.tar.gz | tar -xzf -
+	#curl -L ftp://ftp.cyrusimap.org/cyrus-sasl/cyrus-sasl-${pkgver}.tar.gz | tar -xzf -
+	git clone --single-branch -b cyrus-sasl-2.1.27 https://github.com/cyrusimap/cyrus-sasl.git cyrus-sasl-2.1.27
 }
 
 build() {
 	cd "$builddir"
+	sh ./autogen.sh
 	./configure \
 		--prefix=/usr/local \
 		--sysconfdir=/etc \
