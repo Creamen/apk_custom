@@ -12,7 +12,7 @@ openssl_ver=1.0.2u
 url="https://www.apache.org"
 arch="x86_64"
 license="BSD"
-depends="imap c-client libxpm libvpx gettext libintl libldap libpq zlib libxml2 libpng libmcrypt libxslt pcre sqlite libbz2 curl libffi libjpeg-turbo libxdmcp libxcb ncurses-libs libedit libzip mariadb-dev postgresql-libs"
+depends="imap c-client libxpm libvpx gettext libintl libldap libpq zlib libxml2 libpng libmcrypt libxslt pcre sqlite libbz2 curl libffi libjpeg-turbo libxdmcp libxcb ncurses-libs libedit libzip mariadb postgresql-libs"
 depends_dev="imap-dev libxpm-dev libvpx-dev git libintl openldap-dev postgresql-dev mariadb-dev fts-dev cyrus-sasl-dev zlib-dev libxml2-dev db-dev libpng-dev freetype-dev gettext-dev libmcrypt-dev \
 	libxslt-dev pcre-dev sqlite-dev bzip2-dev curl-dev gdbm-dev libffi-dev glib-dev enchant-dev libjpeg-turbo-dev libxdmcp-dev libxcb-dev gmp-dev icu-dev unixodbc-dev \
 	freetds-dev aspell-dev ncurses-dev libedit-dev recode-dev tidyhtml-dev libzip-dev"
