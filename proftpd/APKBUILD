@@ -1,7 +1,7 @@
 # Contributor: BARON David <db@crea.mn>
 # Maintainer: BARON David <db@crea.mn>
 pkgname=proftpd
-pkgver=v1.3.6
+pkgver=v1.3.6c
 # Start High to avoid collision with Alpine repo
 pkgrel=666
 pkgdesc="ProFTPD - Highly configurable GPL-licensed FTP server software"
