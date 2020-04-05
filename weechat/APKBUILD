@@ -1,7 +1,7 @@
 # Contributor: BARON David <db@crea.mn>
 # Maintainer: BARON David <db@crea.mn>
 pkgname=weechat
-pkgver=2.2
+pkgver=2.8
 pkgrel=666
 pkgdesc="WeeChat - The extensible chat client"
 url="https://weechat.org/"
@@ -9,7 +9,7 @@ arch="x86_64"
 license="BSD"
 depends=""
 depends_dev=""
-makedepends="gnutls-dev libgcrypt-dev cmake ncurses-dev zlib-dev aspell-dev curl-dev ncurses5-widec-libs"
+makedepends="gnutls-dev libgcrypt-dev cmake ncurses-dev zlib-dev aspell-dev curl-dev ncurses5-widec-libs gettext-dev"
 install=""
 subpackages=""
 builddir="$srcdir/$pkgname-$pkgver"
@@ -23,7 +23,7 @@ build() {
 	cd "$builddir/"
 	mkdir build
 	cd build
-	cmake .. -DCMAKE_INSTALL_PREFIX=/usr
+	cmake .. -DENABLE_SCRIPTS=NO -DCMAKE_INSTALL_PREFIX=/usr
 	make -j16
 }
 
