@@ -1,7 +1,7 @@
 # Contributor: BARON David <db@crea.mn>
 # Maintainer: BARON David <db@crea.mn>
 pkgname=redis
-pkgver=5.0.3
+pkgver=5.0.8
 pkgrel=666-gcc-lto
 pkgdesc="Redis LTO"
 url="https://redis.io"

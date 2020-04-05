@@ -1,8 +1,8 @@
 # Contributor: BARON David <db@crea.mn>
 # Maintainer: BARON David <db@crea.mn>
 pkgname=redis
-pkgver=5.0
-pkgrel=4
+pkgver=6.0-rc3
+pkgrel=666
 pkgdesc="Redis"
 url="https://redis.io"
 arch="x86_64"

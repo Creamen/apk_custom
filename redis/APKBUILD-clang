@@ -1,14 +1,14 @@
 # Contributor: BARON David <db@crea.mn>
 # Maintainer: BARON David <db@crea.mn>
 pkgname=redis
-pkgver=5.0.3
-pkgrel=666-gcc-lto
+pkgver=5.0.8
+pkgrel=666-clang-lto
 pkgdesc="Redis LTO"
 url="https://redis.io"
 arch="x86_64"
 license="BSD"
 depends=""
-depends_dev="linux-headers"
+depends_dev="linux-headers llvm9 clang"
 makedepends="$depends_dev"
 install=""
 subpackages=""
@@ -21,7 +21,11 @@ prepare() {
 
 build() {
 	cd "$builddir/"
-	make CC=clang CPP=clang++ CFLAGS="-Ofast" LDFLAGS="-flto -Ofast" PREFIX=/usr -j16 V=1
+	CC=clang
+	CPP=clang++
+	unset REDIS_CFLAGS
+	unset REDIS_LDFLAGS
+	make CFLAGS="-Ofast" LDFLAGS="" PREFIX=/usr -j16 V=1
 }
 
 check() {
