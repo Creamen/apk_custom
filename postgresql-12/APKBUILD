@@ -1,7 +1,7 @@
 # Contributor: BARON David <db@crea.mn>
 # Maintainer: BARON David <db@crea.mn>
 pkgname=postgresql
-pkgver=12.1
+pkgver=12.2
 pkgrel=666
 pkgdesc="PostgreSQL"
 url="https://www.postgresql.org"
