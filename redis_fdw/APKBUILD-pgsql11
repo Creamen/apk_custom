@@ -1,14 +1,14 @@
 # Contributor: BARON David <db@crea.mn>
 # Maintainer: BARON David <db@crea.mn>
 pkgname=redis_fdw
-pkgver=0.9.6.17
-pkgrel=668
-pkgdesc="Redis Foreign Data Wrapper for PostgreSQL 9.6.17"
+pkgver=0.11.7
+pkgrel=666
+pkgdesc="Redis Foreign Data Wrapper for PostgreSQL 11.7"
 url="https://github.com/pg-redis-fdw/redis_fdw"
 arch="x86_64"
 license="PostgreSQL"
-depends="postgresql=9.6.17-r666"
-depends_dev="hiredis-dev postgresql=9.6.17-r666 llvm9 clang"
+depends="postgresql=11.7-r666"
+depends_dev="hiredis-dev postgresql=11.7-r666 clang llvm9"
 makedepends="$depends_dev"
 install=""
 subpackages=""
@@ -18,7 +18,7 @@ builddir=$srcdir/
 
 prepare() {
 	cd "$srcdir/"
-	git clone --single-branch -b REL9_6_STABLE https://github.com/pg-redis-fdw/redis_fdw
+	git clone --single-branch -b REL_11_STABLE https://github.com/pg-redis-fdw/redis_fdw
 }
 
 build() {

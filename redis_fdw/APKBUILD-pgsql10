@@ -1,14 +1,14 @@
 # Contributor: BARON David <db@crea.mn>
 # Maintainer: BARON David <db@crea.mn>
 pkgname=redis_fdw
-pkgver=0.10.4
+pkgver=0.10.12
 pkgrel=666
-pkgdesc="Redis Foreign Data Wrapper for PostgresQL 10.4"
+pkgdesc="Redis Foreign Data Wrapper for PostgreSQL 10.12"
 url="https://github.com/pg-redis-fdw/redis_fdw"
 arch="x86_64"
 license="PostgreSQL"
-depends="postgresql=10.4-r666"
-depends_dev="hiredis-dev postgresql=10.4-r666"
+depends="postgresql=10.12-r666"
+depends_dev="hiredis-dev postgresql=10.12-r666 clang llvm9"
 makedepends="$depends_dev"
 install=""
 subpackages=""
